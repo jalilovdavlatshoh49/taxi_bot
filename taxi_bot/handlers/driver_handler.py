@@ -138,11 +138,10 @@ async def get_car_image(message: types.Message, state: FSMContext):
 
 
 @driver_router.callback_query(lambda call: call.data == "done_car_image")
-async def finish_image_upload(message: types.Message, state: FSMContext):
-    from bot import bot
+async def finish_image_upload(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     
-    user_id = message.from_user.id
+    user_id = call.from_user.id
     
     car_img_data=await state.get_data()
     car_images=car_img_data.get('photos', [])
@@ -159,7 +158,7 @@ async def finish_image_upload(message: types.Message, state: FSMContext):
     driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = driver_result.scalars().first()
     await session.close()
-    await message.answer("Аккаунти шумо муваффақона сабт шуд!")
+    await call.message.answer("Аккаунти шумо муваффақона сабт шуд!")
     confirmation_text = (
         f"Аккаунти шумо:\n\n"
         f"Ном: {driver.name}\n"
@@ -174,7 +173,7 @@ async def finish_image_upload(message: types.Message, state: FSMContext):
     for car_image in car_images_from_db:
         car_img=car_image.file_id
         media.append(InputMediaPhoto(media=car_img))
-    await bot.send_media_group(media)
+    await call.message.answer_media_group(media)
     media.clear()
     await session.close()
     # Тугма барои тасдиқ ё ивази маълумотҳо
@@ -182,7 +181,7 @@ async def finish_image_upload(message: types.Message, state: FSMContext):
         [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_driver_account")]
     ])
         
-    await message.answer(text=confirmation_text, reply_markup=markup)
+    await call.message.answer(text=confirmation_text, reply_markup=markup)
         
     # Намоиши матни тасдиқ ва иловаи маълумот дар бораи сафар бо тугмаи бақайдгирӣ
     trip_text = (
@@ -195,7 +194,7 @@ async def finish_image_upload(message: types.Message, state: FSMContext):
     ])
 
     # Намоиши матн ва тугмаҳо ба якҷоя
-    await message.answer(trip_text, reply_markup=trip_markup)
+    await call.message.answer(trip_text, reply_markup=trip_markup)
 
 
 # 6. Ивази маълумотҳо
