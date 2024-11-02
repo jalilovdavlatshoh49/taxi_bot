@@ -442,7 +442,7 @@ async def set_trip_online(call: CallbackQuery):
         await session.commit()
          # Дубора гирифтани trip бо маълумоти нав
         trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
-    trip = trip_result.scalars().first()
+        trip = trip_result.scalars().first()
 
         await session.close()
     driver_info = (
