@@ -511,65 +511,83 @@ async def no_set_offline(call: CallbackQuery):
     
 
 
-
 @driver_router.callback_query(lambda call: call.data.startswith("yesset_offline"))
 async def yes_set_offline(call: CallbackQuery):
     from bot import bot
     session = AsyncSessionLocal()
-    trip_id = int(call.data.split(":")[1])
-    trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
-    trip = trip_result.scalars().first()
-    clientposts_result = await session.execute(select(ClientPost).where(ClientPost.selected_post_id == trip.id))
-    clientposts = clientposts_result.scalars().all()
-    driver_result = await session.execute(select(Driver).where(Driver.id == trip.driver_id))    
-    driver = driver_result.scalars().first()
-    await session.close()
-    if clientposts:
-        for clientpost in clientposts:
-            clientpost_id = clientpost.id
-            client_id = clientpost.client_user_id 
-            another_taxi_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Дигар такси", callback_data=f"another_taxi:{clientpost_id}")],
+    try:
+        trip_id = int(call.data.split(":")[1])
+        
+        # Гирифтани маълумоти сафар
+        trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
+        trip = trip_result.scalars().first()
+
+        # Гирифтани маълумоти мизоҷон
+        clientposts_result = await session.execute(select(ClientPost).where(ClientPost.selected_post_id == trip.id))
+        clientposts = clientposts_result.scalars().all()
+
+        # Гирифтани маълумоти ронанда
+        driver_result = await session.execute(select(Driver).where(Driver.id == trip.driver_id))    
+        driver = driver_result.scalars().first()
+        
+        # Агар мизоҷон бошанд, ба ҳар кадоме паём фиристода мешавад
+        if clientposts:
+            for clientpost in clientposts:
+                clientpost_id = clientpost.id
+                client_id = clientpost.client_user_id
+                
+                # Тугма барои дигар такси
+                another_taxi_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="Дигар такси", callback_data=f"another_taxi:{clientpost_id}")]
                 ])
 
-            # Фиристодани паём ба мизоҷ
-            await bot.send_message(
-                chat_id=client_id,
-                text=f"Ронанда: {driver.name}\n\n Аз {trip.from_city}\n ба {trip.to_city}\n шуморо қабул накард.\n\n Лутфан дигар таксиро заказ кунед.",
-                reply_markup=another_taxi_keyboard
+                # Фиристодани паём ба мизоҷ
+                await bot.send_message(
+                    chat_id=client_id,
+                    text=f"Ронанда: {driver.name}\n\nАз {trip.from_city}\nба {trip.to_city}\nшуморо қабул накард.\n\nЛутфан дигар таксиро заказ кунед.",
+                    reply_markup=another_taxi_keyboard
                 )
 
-        async with session.begin():    
-            await session.execute(delete(ClientPost).where(ClientPost.selected_post_id == trip.id))
-            await session.commit()
-            await session.close()
-    
-    async with session.begin():
-        await session.execute(update(DriverPost).where(DriverPost.id == trip_id).values(current_clients = int(0), is_online = False))
-        await session.commit()
-        await session.close()
+            # Ҳазфи мизоҷон
+            async with session.begin():    
+                await session.execute(delete(ClientPost).where(ClientPost.selected_post_id == trip.id))
+                await session.commit()
         
-    driver_info = (
+        # Навсозии ҳолати пост ба офлайн
+        async with session.begin():
+            await session.execute(update(DriverPost).where(DriverPost.id == trip_id).values(current_clients=0, is_online=False))
+            await session.commit()
+        
+        # Гирифтани маълумоти навшудаи сафар
+        trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
+        trip = trip_result.scalars().first()
+
+        # Маълумот барои ронанда
+        driver_info = (
             f"Маълумот дар бораи сафар:\n\n"
-        f"Аз шаҳри: {trip.from_city}\n"
-        f"Ба шаҳри: {trip.to_city}\n\n"
-        f"Нарх: {trip.price}\n\n"
-        f"Шумораи клиенти кабулкардашуда: {trip.current_clients}\n\n"
-        f"Шумораи клиенти лозима: {trip.max_clients}\n\n"
-        f"Комментария:\n {trip.comment if trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
-        f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
-        f"Ин пост: {'ОНЛАЙН аст.' if trip.is_online else 'ОФЛАЙН аст'}"
+            f"Аз шаҳри: {trip.from_city}\n"
+            f"Ба шаҳри: {trip.to_city}\n\n"
+            f"Нарх: {trip.price}\n\n"
+            f"Шумораи клиенти қабулкардашуда: {trip.current_clients}\n\n"
+            f"Шумораи клиенти лозима: {trip.max_clients}\n\n"
+            f"Комментария:\n{trip.comment if trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
+            f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
+            f"Ин пост: {'ОНЛАЙН аст.' if trip.is_online else 'ОФЛАЙН аст'}"
         )
 
-        # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{trip.id}")],
-        [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{trip.id}")],
-        [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{trip.id}")],
-        [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{trip.id}")]
+        # Тугмаҳо барои идоракунии сафар
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{trip.id}")],
+            [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{trip.id}")],
+            [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{trip.id}")],
+            [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{trip.id}")]
         ])
 
-    await call.message.answer(driver_info, reply_markup=keyboard)    
+        # Ирсоли маълумоти нав ба ронанда
+        await call.message.answer(driver_info, reply_markup=keyboard)    
+
+    finally:
+        await session.close()   
         
    
     
