@@ -421,6 +421,7 @@ async def process_comment(message: Message, state: FSMContext):
     
     
     
+
 # Сафарро онлайн кардан
 @driver_router.callback_query(lambda call: call.data.startswith("set_online"))
 async def set_trip_online(call: CallbackQuery):
@@ -430,24 +431,22 @@ async def set_trip_online(call: CallbackQuery):
     trip = trip_result.scalars().first()
     clientposts_result = await session.execute(select(ClientPost).where(ClientPost.selected_post_id == trip.id))
     clientposts = clientposts_result.scalars().all()
-    
-    # Пок кардани клиентҳои вобастаи пост
+    await session.close()
     if clientposts:
         for clientpost in clientposts:
             await session.delete(clientpost)
-        await session.commit()  # Коммит баъди ҳозфи клиентҳо
-    
-    # Навсозии ҳолати пост ба онлайн
+            await session.commit()
+        await session.close()    
     async with session.begin():
-        await session.execute(update(DriverPost).where(DriverPost.id == trip_id).values(current_clients=0, is_online=True))
+        await session.execute(update(DriverPost).where(DriverPost.id == trip_id).values(current_clients = int(0), is_online = True))
         await session.commit()
-    
-    # Дубора гирифтани trip бо маълумоти нав
-    trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
+         # Дубора гирифтани trip бо маълумоти нав
+        trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
     trip = trip_result.scalars().first()
 
+        await session.close()
     driver_info = (
-        f"Маълумот дар бораи сафар:\n\n"
+            f"Маълумот дар бораи сафар:\n\n"
         f"Аз шаҳри: {trip.from_city}\n"
         f"Ба шаҳри: {trip.to_city}\n\n"
         f"Нарх: {trip.price}\n\n"
@@ -456,18 +455,17 @@ async def set_trip_online(call: CallbackQuery):
         f"Комментария:\n {trip.comment if trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
         f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
         f"Ин пост: {'ОНЛАЙН аст.' if trip.is_online else 'ОФЛАЙН аст'}"
-    )
+        )
 
-    # Тугмаҳо барои идоракунии сафар
+    # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{trip.id}")],
-        [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{trip.id}")],
-        [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{trip.id}")],
-        [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{trip.id}")]
+    [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{trip.id}")],
+    [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{trip.id}")],
+    [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{trip.id}")],
+    [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{trip.id}")]
     ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)
-    await session.close()
     
 # Сафарро офлайн кардан
 @driver_router.callback_query(lambda call: call.data.startswith("set_offline"))
