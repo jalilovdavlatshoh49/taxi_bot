@@ -440,11 +440,12 @@ async def set_trip_online(call: CallbackQuery):
     async with session.begin():
         await session.execute(update(DriverPost).where(DriverPost.id == trip_id).values(current_clients = int(0), is_online = True))
         await session.commit()
-         # Дубора гирифтани trip бо маълумоти нав
-        trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
-        trip = trip_result.scalars().first()
-
         await session.close()
+    # Дубора гирифтани trip бо маълумоти нав
+    trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
+    trip = trip_result.scalars().first()
+
+    await session.close()
     driver_info = (
             f"Маълумот дар бораи сафар:\n\n"
         f"Аз шаҳри: {trip.from_city}\n"
@@ -545,12 +546,12 @@ async def yes_set_offline(call: CallbackQuery):
     async with session.begin():
         await session.execute(update(DriverPost).where(DriverPost.id == trip_id).values(current_clients = int(0), is_online = False))
         await session.commit()
-                
-        # Гирифтани маълумоти навшудаи сафар
-        trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
-        trip = trip_result.scalars().first()
+        await session.close()      
+    # Гирифтани маълумоти навшудаи сафар
+    trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
+    trip = trip_result.scalars().first()
 
-        await session.close()
+    await session.close()
 
     driver_info = (
             f"Маълумот дар бораи сафар:\n\n"
