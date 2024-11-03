@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import logging
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, Router, types
 from aiogram.types import BotCommand
 from handlers.start_handler import start_router
 from handlers.driver_handler import driver_router
@@ -21,18 +21,19 @@ API_TOKEN = os.getenv("API_BOT_TOKEN")
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
-
+main_router = Router()
     
-
+main_router.include_router(start_router)
+main_router.include_router(driver_router)
+main_router.include_router(client_router)
+main_router.include_router(inline_menu_router)
+    
 
 
 # Функсияи асосӣ барои оғоз кардани бот
 async def main():
     await set_menu_commands(bot)
-    dp.include_router(start_router)
-    dp.include_router(driver_router)
-    dp.include_router(client_router)
-    dp.include_router(inline_menu_router)
+    dp.include_router(main_router)
     
     # Оғози боти Telegram
     await bot.delete_webhook(drop_pending_updates=True)
