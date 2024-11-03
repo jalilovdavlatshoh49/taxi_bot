@@ -23,16 +23,17 @@ dp = Dispatcher(storage=MemoryStorage())
 
 main_router = Router()
     
-main_router.include_router(start_router)
-main_router.include_router(driver_router)
-main_router.include_router(client_router)
-main_router.include_router(inline_menu_router)
-    
+
 
 
 # Функсияи асосӣ барои оғоз кардани бот
 async def main():
     await set_menu_commands(bot)
+     main_router.include_router(start_router)
+     main_router.include_router(driver_router)
+     main_router.include_router(client_router)
+     main_router.include_router(inline_menu_router)
+    
     dp.include_router(main_router)
     
     # Оғози боти Telegram
