@@ -39,7 +39,7 @@ class DriverPost(Base):
     price = Column(Float, nullable=False)
     max_clients = Column(Integer, nullable=False)
     current_clients = Column(Integer, default=0)
-    is_online = Column(Boolean, default=False, index=True)
+    is_online = Column(Boolean, default=True, index=True)
     comment = Column(Text)
     
     driver_id = Column(Integer, ForeignKey('drivers.id'))
