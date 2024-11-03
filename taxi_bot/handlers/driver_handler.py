@@ -975,9 +975,10 @@ async def end_trip(call: CallbackQuery):
             
         await bot.send_message(client_id, f"Лутфан ба ронандаи {driver.name} баҳо гузоред:", reply_markup=keyboard)
 
-        await session.delete(clientpost)
-        await session.commit()
-        await session.close()
+    # Ҳамаи объектҳои `clientpost`-ро якбора нест кунед
+    await session.execute(delete(ClientPost).where(ClientPost.selected_post_id == trip.id))
+    await session.commit()
+    await session.close()
     
     await call.message.answer(f"Сафари бо ID {trip_id} ба итмом расид.")
     
