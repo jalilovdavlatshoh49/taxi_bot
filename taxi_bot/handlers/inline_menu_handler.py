@@ -200,7 +200,7 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
 
     elif data == "inline_my_driver":
         session = AsyncSessionLocal()
-        user_id = call.message.from_user.id
+        
         clientposts_result = await session.execute(select(ClientPost).where(ClientPost.client_user_id == user_id))
         clientposts = clientposts_result.scalars().all()
         await session.close()
