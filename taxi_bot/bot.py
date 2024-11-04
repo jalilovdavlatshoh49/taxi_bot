@@ -9,6 +9,7 @@ from handlers.client_handler import client_router
 from handlers.inline_menu_handler import inline_menu_router
 from aiogram.fsm.storage.memory import MemoryStorage
 from keyboards.menu import set_menu_commands
+from db.database import create_tables
 
 load_dotenv()
 # Танзими логгирӣ
@@ -28,6 +29,7 @@ main_router = Router()
 
 # Функсияи асосӣ барои оғоз кардани бот
 async def main():
+    await create_tables()
     await set_menu_commands(bot)
     main_router.include_router(start_router)
     main_router.include_router(driver_router)
