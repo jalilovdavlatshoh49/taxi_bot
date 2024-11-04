@@ -832,9 +832,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
         text=f"Ронанда {post.from_city} ба {post.to_city} шуморо қабул кард.\n\n Сафари хуб."
     )
 
-    # Ҳамзамон callback_query-и даъватшударо ҷавоб медиҳем
-    await call.answer()
-
+ 
     edited_post_result = await session.execute(select(DriverPost).where(DriverPost.id == post.id))
     edited_post = edited_post_result.scalars().first()
     await session.close()
@@ -915,9 +913,7 @@ async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
             reply_markup=another_taxi_keyboard
         )
 
-        # Ҷавоби callback_query-ро медиҳем
-        await call.answer()
-
+ 
 
 @driver_router.callback_query(lambda call: call.data.startswith("start_trip"))
 async def start_trip(call: CallbackQuery):
