@@ -331,7 +331,7 @@ async def process_price(message: Message, state: FSMContext):
     try:
         price = float(message.text)
         await state.update_data(price=price)
-        await message.answer("Чанд нафар мизоҷ дар сафар лозим аст:")
+        await message.answer("Чанд нафар клиент барои сафар лозим аст:")
         await state.set_state(DriverTripFSM.max_clients)
     except ValueError:
         await message.answer("Лутфан нархи дуруст ворид кунед (фақат рақамҳо).")
