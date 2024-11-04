@@ -1006,6 +1006,8 @@ async def my_posts(message: types.Message):
                         f"Маълумот дар бораи клиент:\n\n"
                     f"Аз шаҳри: {clientpost.from_city}\n\n"
                     f"Ба шаҳри: {clientpost.to_city}\n\n"
+                    f"Номи клиент: {client.name}\n\n"
+                    f"Рақами телефон: {client.phone_number}\n\n"
                     f"Нарх: {driverpost.price}\n\n"
                     f"Шумораи клиент: {clientpost.num_clients}\n\n"
                     )
