@@ -31,18 +31,21 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
 
     client_result = await session.execute(select(Client).where(Client.user_id == user_id))
     client = client_result.scalars().first()
+
+    if client:
+        keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
+        await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+        await state.set_state(ClientPostFSM.waiting_for_from_city)
+
     
-    if not client:
+    else:
         client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="регистратсия", callback_data="client_registration")],
                 ])
 
         await message.answer("Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
     
-    keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-    await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
-    await state.set_state(ClientPostFSM.waiting_for_from_city)
-
+    
         
     
     
