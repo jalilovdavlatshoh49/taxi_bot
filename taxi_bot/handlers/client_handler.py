@@ -27,11 +27,13 @@ cities_per_page = 5
 # Пас аз пахш кардани тугмаи "Мизоҷ"
 @client_router.callback_query(lambda call: call.data.startswith("startclient"))
 async def welcome_client(call: types.CallbackQuery, state: FSMContext):
-    user_id = call.message.from_user.id
+    user_id_data = call.data.split(":")
+    user_id = user_id_data[1]
+    session = AsyncSessionLocal()
 
     client_result = await session.execute(select(Client).where(Client.user_id == user_id))
     client = client_result.scalars().first()
-
+    await session.close()
     if client:
         keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
         await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
