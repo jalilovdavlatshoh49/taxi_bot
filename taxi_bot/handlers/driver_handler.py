@@ -857,6 +857,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
         ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)
+    await state.finish()
     
 # Хандлер барои рад кардан
 @driver_router.callback_query(lambda c: c.data.startswith("decline_"))
@@ -912,6 +913,8 @@ async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
             text=f"Ронанда: {driver.name}\n\n Аз {post.from_city}\n ба {post.to_city}\n шуморо қабул накард.\n\n Лутфан дигар таксиро заказ кунед.",
             reply_markup=another_taxi_keyboard
         )
+        
+        await state.finish()
 
  
 
