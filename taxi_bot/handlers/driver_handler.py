@@ -20,7 +20,7 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = result.scalars().first()
-    await session.delete(driver)
+    await session.delete(result)
     await session.commit()
     await session.close()
     if driver:
