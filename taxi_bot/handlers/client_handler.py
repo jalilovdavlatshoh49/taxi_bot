@@ -481,7 +481,7 @@ async def process_phone_number(message: types.Message, state: FSMContext):
                 print(f"Хатогӣ ҳангоми фиристодани паём ба ронанда: {e}")
         else:
             keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-            await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+            await message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
             await state.set_state(ClientPostFSM.waiting_for_from_city)
 
         
