@@ -20,6 +20,8 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = result.scalars().first()
+    await session.delete(driver)
+    await session.commit()
     await session.close()
     if driver:
         img_from_db = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
