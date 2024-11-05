@@ -20,8 +20,7 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = result.scalars().first()
-    await session.delete(result)
-    await session.commit()
+    
     await session.close()
     if driver:
         img_from_db = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
@@ -38,13 +37,11 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
                                     
             media=[]    
             for car_image in car_images_from_db:
-                await session.delete(car_image)
-                await session.commit()
-                await session.close()
-                # car_img = car_image.file_id
-                # media.append(InputMediaPhoto(media=car_img))
-           #  await call.message.answer_media_group(media)
-          #   media.clear()
+                
+                car_img = car_image.file_id
+                media.append(InputMediaPhoto(media=car_img))
+            await call.message.answer_media_group(media)
+            media.clear()
                     
                             
             # Тугма барои тасдиқ ё ивази маълумотҳо
