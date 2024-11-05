@@ -285,7 +285,7 @@ async def handle_choose_post(call: CallbackQuery, state: FSMContext):
 @client_router.message(ClientPostFSM.waiting_for_num_clients)
 async def process_num_clients(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_num_clients=message.text)
-    from bot_dile import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
     user_data = await state.get_data()
     post_id = user_data["waiting_for_selected_post_id"]
