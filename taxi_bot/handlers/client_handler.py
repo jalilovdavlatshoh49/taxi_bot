@@ -285,7 +285,7 @@ async def handle_choose_post(call: CallbackQuery, state: FSMContext):
 @client_router.message(ClientPostFSM.waiting_for_num_clients)
 async def process_num_clients(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_num_clients=message.text)
-    from bot import bot
+    from bot_dile import bot
     session = AsyncSessionLocal()
     user_data = await state.get_data()
     post_id = user_data["waiting_for_selected_post_id"]
@@ -411,7 +411,7 @@ async def process_name(message: types.Message, state: FSMContext):
 async def process_phone_number(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_phone_number=message.text)
         
-    from bot import bot
+    from bot_file import bot
     
 
     # Маълумоти мизоҷро ёфтан
@@ -511,7 +511,7 @@ async def choose_another_taxi(call: types.CallbackQuery, state: FSMContext):
 # Функсия барои қабул кардани баҳо аз тугмаҳо
 @client_router.callback_query(lambda call: call.data.startswith("rate"))
 async def process_rating(call: CallbackQuery):
-    from bot import bot
+    from bot_file import bot
     client_user_id=call.from_user.id
     # Парс кардани callback_data
     data=call.data.split(":")
@@ -695,7 +695,7 @@ async def update_info(message: types.Message, state: FSMContext):
 
 @client_router.callback_query(lambda call: call.data.startswith("declinedriver"))
 async def decline_driver(call: types.CallbackQuery):
-    from bot import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
     user_id = call.message.from_user.id
 
