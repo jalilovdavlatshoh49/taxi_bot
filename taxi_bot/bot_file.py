@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from aiogram import Bot
 
 # Токени боти Telegram-и худро ворид кунед
