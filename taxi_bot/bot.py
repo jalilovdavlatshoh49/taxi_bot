@@ -1,5 +1,4 @@
-import os
-from dotenv import load_dotenv
+
 import logging
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.types import BotCommand
@@ -11,15 +10,11 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from keyboards.menu import set_menu_commands
 from db.database import create_tables
 
-load_dotenv()
+
 # Танзими логгирӣ
 logging.basicConfig(level=logging.INFO)
 
-# Токени боти Telegram-и худро ворид кунед
-API_TOKEN = os.getenv("API_BOT_TOKEN")
 
-# Танзими бот ва диспетчер
-bot = Bot(token=API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
 main_router = Router()
