@@ -1,4 +1,4 @@
-
+from bot_file import bot
 import logging
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.types import BotCommand
