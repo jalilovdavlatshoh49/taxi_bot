@@ -38,10 +38,13 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
                                     
             media=[]    
             for car_image in car_images_from_db:
-                car_img = car_image.file_id
-                media.append(InputMediaPhoto(media=car_img))
-            await call.message.answer_media_group(media)
-            media.clear()
+                await session.delete(car_image)
+                await session.commit()
+                await session.close()
+                # car_img = car_image.file_id
+                # media.append(InputMediaPhoto(media=car_img))
+           #  await call.message.answer_media_group(media)
+          #   media.clear()
                     
                             
             # Тугма барои тасдиқ ё ивази маълумотҳо
