@@ -524,7 +524,7 @@ async def no_set_offline(call: CallbackQuery):
 
 @driver_router.callback_query(lambda call: call.data.startswith("yesset_offline"))
 async def yes_set_offline(call: CallbackQuery):
-    from bot import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
     trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
@@ -596,7 +596,7 @@ async def yes_set_offline(call: CallbackQuery):
 # Удалит кардани сафар
 @driver_router.callback_query(lambda call: call.data.startswith("delete_trip"))
 async def delete_trip(call: CallbackQuery,):
-    from bot import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
     trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
@@ -809,7 +809,7 @@ async def show_help(message: types.Message):
 # Хандлер барои қабул кардан
 @driver_router.callback_query(lambda c: c.data.startswith("accept_"))
 async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
-    from bot import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
 
     data = call.data.split("_")
@@ -874,7 +874,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
 @driver_router.callback_query(lambda c: c.data.startswith("decline_"))
 async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
 
-    from bot import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
 
 
@@ -931,7 +931,7 @@ async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
 
 @driver_router.callback_query(lambda call: call.data.startswith("start_trip"))
 async def start_trip(call: CallbackQuery):
-    from bot import bot
+    from bot_file import bot
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
     trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
@@ -962,7 +962,7 @@ async def start_trip(call: CallbackQuery):
 
 @driver_router.callback_query(lambda call: call.data.startswith("end_trip"))
 async def end_trip(call: CallbackQuery):
-    from bot import bot
+    from bot_file import bot
     
     trip_id = int(call.data.split(":")[1])
 
