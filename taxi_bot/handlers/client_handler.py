@@ -23,35 +23,38 @@ cities_per_page = 5
 
 
 
-
 # Пас аз пахш кардани тугмаи "Мизоҷ"
 @client_router.callback_query(lambda call: call.data.startswith("startclient"))
 async def welcome_client(call: types.CallbackQuery, state: FSMContext):
     user_id_data = call.data.split(":")
-    user_id = user_id_data[1]
-    session = AsyncSessionLocal()
-    client_result = await session.execute(select(Client).where(Client.user_id == user_id))
-    client = client_result.scalars().first()
-    await session.close()
-    if client:
-        confirmation_text = (
-            f"Аккаунти шумо:\n\n"
-            f"Ном: {client.name}\n"
-            f"Рақами телефон: {client.phone_number}\n"
+    if len(user_id_data) > 1:
+        user_id = user_id_data[1]
+        async with AsyncSessionLocal() as session:
+            client_result = await session.execute(select(Client).where(Client.user_id == user_id))
+            client = client_result.scalars().first()
+
+        if client:
+            confirmation_text = (
+                f"Аккаунти шумо:\n\n"
+                f"Ном: {client.name}\n"
+                f"Рақами телефон: {client.phone_number}\n"
             )
 
-
-        # Тугма барои тасдиқ ё ивази маълумотҳо
-        markup = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")]
-        ])
-        await message.answer(confirmation_text, reply_markup=markup)
-    else:
-        client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            # Тугма барои тасдиқ ё ивази маълумотҳо
+            markup = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")]
+            ])
+            await call.message.answer(confirmation_text, reply_markup=markup)
+        else:
+            client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="регистратсия", callback_data="client_registration")],
-                ])
-
-        await message.answer("Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
+            ])
+            await call.message.answer(
+                "Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед",
+                reply_markup=client_registration_keyboard
+            )
+    else:
+        await call.answer("Маълумоти ID нодуруст аст.", show_alert=True)
     
         
     
