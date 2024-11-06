@@ -815,7 +815,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
     client_id = int(data[1])
     post_id = int(data[2])
-    
+
     # Гирифтани мизоҷ ва пост аз базаи маълумот
     client_result = await session.execute(select(Client).where(Client.id == client_id))
     client = client_result.scalars().first()
@@ -829,7 +829,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
         await session.commit()
         await session.close()
 
-    
+
 
     # Фиристодани паём ба ронанда
     await bot.send_message(
@@ -843,8 +843,6 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
         text=f"Ронанда {post.from_city} ба {post.to_city} шуморо қабул кард.\n\n Сафари хуб."
     )
 
-    # Ҳамзамон callback_query-и даъватшударо ҷавоб медиҳем
-    await call.answer()
 
     edited_post_result = await session.execute(select(DriverPost).where(DriverPost.id == post.id))
     edited_post = edited_post_result.scalars().first()
