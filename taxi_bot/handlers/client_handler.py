@@ -441,13 +441,14 @@ async def process_phone_number(message: types.Message, state: FSMContext):
         client = client_result.scalars().first()
         clientpost_result = await session.execute(select(ClientPost).where(ClientPost.client_user_id == client.user_id).order_by(desc(ClientPost.id)))
         clientpost = clientpost_result.scalars().first()
-        post_id = clientpost.id
-        post_result = await session.execute(select(DriverPost).where(DriverPost.id == post_id))
-        post = post_result.scalars().first()
-        driver_result = await session.execute(select(Driver).where(Driver.id == post.driver_id))
-        driver = driver_result.scalars().first()
+        
         await session.close()
         if clientpost:    
+            post_id = clientpost.id
+            post_result = await session.execute(select(DriverPost).where(DriverPost.id == post_id))
+            post = post_result.scalars().first()
+            driver_result = await session.execute(select(Driver).where(Driver.id == post.driver_id))
+            driver = driver_result.scalars().first()
      
             # Паёми тасдиқ ба мизоҷ
             await message.answer(text=f"Шумо постро интихоб кардед: {post.from_city} -> {post.to_city}\n Нарх: {post.price} сомонӣ.\n Ронанда: {driver.name}.\n Телефони ронанда: {driver.phone_number} ")
