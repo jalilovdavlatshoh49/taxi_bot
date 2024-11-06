@@ -834,8 +834,8 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
             await bot.send_message(call.from_user.id, "Пост ёфт нашуд.")
             return
 
-        async with session.begin():
-            await session.execute(update(ClientPost).where(ClientPost.id == clientpost.id).values(selected_post_id=post_id))
+        
+        await session.execute(update(ClientPost).where(ClientPost.id == clientpost.id).values(selected_post_id=post_id))
 
         # Фиристодани паём ба ронанда
         await bot.send_message(
@@ -872,7 +872,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
     ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)
-    await state.finish()
+   
 
     
 # Хандлер барои рад кардан
@@ -930,7 +930,6 @@ async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
             reply_markup=another_taxi_keyboard
         )
         
-        await state.finish()
 
  
 
