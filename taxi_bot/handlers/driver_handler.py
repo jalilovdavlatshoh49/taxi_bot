@@ -805,7 +805,74 @@ async def show_help(message: types.Message):
     await message.answer("Аз навигариҳо бохабар шавед.", reply_markup=keyboard)
 
 
+# Хандлер барои қабул кардан
+@driver_router.callback_query(lambda c: c.data.startswith("accept_"))
+async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
+    from bot_file import bot
 
+    async with AsyncSessionLocal() as session:
+        data = call.data.split("_")
+        client_id = int(data[1])
+        post_id = int(data[2])
+
+        # Гирифтани мизоҷ ва пост аз базаи маълумот
+        client_result = await session.execute(select(Client).where(Client.id == client_id))
+        client = client_result.scalars().first()
+        if not client:
+            await bot.send_message(call.from_user.id, "Мизоҷ ёфт нашуд.")
+            return
+
+        clientpost_result = await session.execute(select(ClientPost).where(ClientPost.client_user_id == client.user_id).order_by(desc(ClientPost.id)))
+        clientpost = clientpost_result.scalars().first()
+        if clientpost is None:
+            await bot.send_message(call.from_user.id, "Ҳеҷ пост аз мизоҷ пайдо нашуд.")
+            return
+
+        post_result = await session.execute(select(DriverPost).where(DriverPost.id == post_id))
+        post = post_result.scalars().first()
+        if not post:
+            await bot.send_message(call.from_user.id, "Пост ёфт нашуд.")
+            return
+
+        async with session.begin():
+            await session.execute(update(ClientPost).where(ClientPost.id == clientpost.id).values(selected_post_id=post_id))
+
+        # Фиристодани паём ба ронанда
+        await bot.send_message(
+            chat_id=call.from_user.id,
+            text=f"Шумо {client.name}-ро қабул кардед."
+        )
+
+        # Фиристодани паём ба мизоҷ
+        await bot.send_message(
+            chat_id=client.user_id,
+            text=f"Ронанда {post.from_city} ба {post.to_city} шуморо қабул кард.\n\n Сафари хуб."
+        )
+
+        edited_post_result = await session.execute(select(DriverPost).where(DriverPost.id == post.id))
+        edited_post = edited_post_result.scalars().first()
+
+    driver_info = (
+        f"Маълумот дар бораи сафар:\n\n"
+        f"Аз шаҳри: {edited_post.from_city}\n"
+        f"Ба шаҳри: {edited_post.to_city}\n\n"
+        f"Нарх: {edited_post.price}\n\n"
+        f"Шумораи клиенти кабулкардашуда: {edited_post.current_clients}\n\n"
+        f"Шумораи клиенти лозима: {edited_post.max_clients}\n\n"
+        f"Комментария:\n {edited_post.comment if edited_post.comment else 'ронанда коментария нагузоштааст'}\n\n"
+        f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
+        f"Ин пост: {'ОНЛАЙН аст.' if edited_post.is_online else 'ОФЛАЙН аст'}"
+    )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{edited_post.id}")],
+        [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{edited_post.id}")],
+        [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{edited_post.id}")],
+        [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{edited_post.id}")]
+    ])
+
+    await call.message.answer(driver_info, reply_markup=keyboard)
+    await state.finish()
 
     
 # Хандлер барои рад кардан
