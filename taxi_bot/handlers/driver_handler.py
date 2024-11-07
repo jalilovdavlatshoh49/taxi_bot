@@ -8,9 +8,8 @@ from data.cities import cities
 from math import ceil
 from states.driver_states import CarImageFSM, RegisterDriverFSM, EditDriverInfo, DriverTripFSM
 from sqlalchemy import desc, select, delete, update
-from start_handler import start_router
 
-
+start_router = Router()
 
 # Коркарди пахши тугмаи "Ронанда"
 @start_router.callback_query(lambda call: call.data.startswith("startdriver"))
@@ -524,7 +523,7 @@ async def no_set_offline(call: CallbackQuery):
 
 @start_router.callback_query(lambda call: call.data.startswith("yesset_offline"))
 async def yes_set_offline(call: CallbackQuery):
-    from bot_file import bot
+    bot = message.bot
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
     trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
@@ -596,7 +595,7 @@ async def yes_set_offline(call: CallbackQuery):
 # Удалит кардани сафар
 @start_router.callback_query(lambda call: call.data.startswith("delete_trip"))
 async def delete_trip(call: CallbackQuery,):
-    from bot_file import bot
+    bot = message.bot
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
     trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
@@ -815,7 +814,7 @@ async def show_help(message: types.Message):
 # Хандлер барои қабул кардан
 @start_router.callback_query(lambda c: c.data.startswith("accept_"))
 async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
-    from bot_file import bot
+    bot = message.bot
 
     async with AsyncSessionLocal() as session:
         data = call.data.split("_")
@@ -886,7 +885,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
 @start_router.callback_query(lambda c: c.data.startswith("decline_"))
 async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
 
-    from bot_file import bot
+    bot = message.bot
     session = AsyncSessionLocal()
 
 
@@ -942,7 +941,7 @@ async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
 
 @start_router.callback_query(lambda call: call.data.startswith("start_trip"))
 async def start_trip(call: CallbackQuery):
-    from bot_file import bot
+    bot = message.bot
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
     trip_result = await session.execute(select(DriverPost).where(DriverPost.id == trip_id))
@@ -973,7 +972,7 @@ async def start_trip(call: CallbackQuery):
 
 @start_router.callback_query(lambda call: call.data.startswith("end_trip"))
 async def end_trip(call: CallbackQuery):
-    from bot_file import bot
+    bot = message.bot
     
     trip_id = int(call.data.split(":")[1])
 
