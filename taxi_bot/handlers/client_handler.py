@@ -285,6 +285,8 @@ async def handle_choose_post(call: CallbackQuery, state: FSMContext):
 # Қабули шумораи мизоҷон ва сабти мизоҷ дар пойгоҳи додаҳо
 @start_router.message(ClientPostFSM.waiting_for_num_clients)
 async def process_num_clients(message: types.Message, state: FSMContext):
+    if not message.text.isdigit():
+        await message.answer("Лутфан рақами тулуфонро дуруст нависед")
     await state.update_data(waiting_for_num_clients=message.text)
     bot = message.bot
     session = AsyncSessionLocal()
@@ -292,7 +294,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
     post_id = user_data["waiting_for_selected_post_id"]
     num_clients = user_data['waiting_for_num_clients']
 
-                    
+    state.clear()        
     # Маълумоти мизоҷро ёфтан
     user_id = message.from_user.id
 
@@ -332,7 +334,6 @@ async def process_num_clients(message: types.Message, state: FSMContext):
             
     
 
-            state.clear()
             
             # Пост ва ронандаро аз базаи маълумот ёфтан
             post_result = await session.execute(select(DriverPost).where(DriverPost.id == post_id))
