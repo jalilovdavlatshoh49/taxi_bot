@@ -15,7 +15,7 @@ async def on_start(message: types.Message):
         [InlineKeyboardButton(text=mizoj, callback_data=f"startclient:{user_id}")],
         [InlineKeyboardButton(text=ronanda, callback_data=f"startdriver:{user_id}")],
         [InlineKeyboardButton(text="Обуна шудан ба група", url="https://t.me/ronanda_bot")],
-        [InlineKeyboardButton(text="Истифодабарии бот", url="https://t.me/ronanda_bot")]
+        [InlineKeyboardButton(text="Истифодабарии бот", callback_data="usage_guide")]
     ])
 
     
