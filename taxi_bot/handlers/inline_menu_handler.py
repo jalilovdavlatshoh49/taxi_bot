@@ -18,11 +18,11 @@ async def menu(message: types.Message):
         [InlineKeyboardButton(text="Истифодабарии бот", url="https://t.me/ronanda_bot")],
         [InlineKeyboardButton(text="Обуна шудан ба група", url="https://t.me/ronanda_bot")],
         [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")],
-        [InlineKeyboardButton(text="Клиентҳои ронанда", callback_data="inline_my_clients")],
+        [InlineKeyboardButton(text="Клиентҳои ман", callback_data="inline_my_clients")],
         [InlineKeyboardButton(text="Ронандаи ман", callback_data="inline_my_driver")],
-        [InlineKeyboardButton(text="Аккаунт барои клиент", callback_data="inline_client_account")],
-        [InlineKeyboardButton(text="Постҳои ронанда", callback_data="inline_my_posts")],
-        [InlineKeyboardButton(text="Аккаунт барои ронанда", callback_data="inline_driver_account")],
+        [InlineKeyboardButton(text="Постҳои ман", callback_data="inline_my_posts")],
+        [InlineKeyboardButton(text="Аккаунт ҳамчун клиент", callback_data="inline_client_account")],
+        [InlineKeyboardButton(text="Аккаунт ҳамчун ронанда", callback_data="inline_driver_account")],
         [InlineKeyboardButton(text="Бақайдгирии сафари нав", callback_data="inline_new_trip")]
     ])
 
@@ -59,6 +59,8 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
                             f"Маълумот дар бораи клиент:\n\n"
                         f"Аз шаҳри: {clientpost.from_city}\n\n"
                         f"Ба шаҳри: {clientpost.to_city}\n\n"
+                        f"Номи клиент: {client.name}\n\n"
+                        f"Рақами телефон: {client.phone_number}\n\n"
                         f"Нарх: {driverpost.price}\n\n"
                         f"Шумораи клиент: {clientpost.num_clients}\n\n"
                         )
