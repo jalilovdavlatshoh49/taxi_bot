@@ -14,9 +14,8 @@ from sqlalchemy import desc, select, update
 from math import ceil
 from states.client_states import ClientPostFSM, ClientRegistrationFSM, EditClientInfo
 from keyboards.get_driver_post import build_pagination_keyboard, build_post_keyboard
+from start_handler import start_router
 
-# Ташкили роутер барои мизоҷ
-client_router = Router()
 
 cities_per_page = 5
 
@@ -24,7 +23,7 @@ cities_per_page = 5
 
 
 # Пас аз пахш кардани тугмаи "Мизоҷ"
-@client_router.callback_query(lambda call: call.data.startswith("startclient"))
+@start_router.callback_query(lambda call: call.data.startswith("startclient"))
 async def welcome_client(call: types.CallbackQuery, state: FSMContext):
     user_id_data = call.data.split(":")
     if len(user_id_data) > 1:
@@ -60,7 +59,7 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
     
     
 # Хандлер барои интихоби шаҳри оғоз
-@client_router.callback_query(lambda call: call.data.startswith("client_from_city"))
+@start_router.callback_query(lambda call: call.data.startswith("client_from_city"))
 async def process_from_city_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
     
@@ -79,7 +78,7 @@ async def process_from_city_callback(call: types.CallbackQuery, state: FSMContex
         
         
 # Хандлер барои интихоби шаҳри сафар
-@client_router.callback_query(lambda call: call.data.startswith("client_to_city"))
+@start_router.callback_query(lambda call: call.data.startswith("client_to_city"))
 async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     data = call.data.split("_")
@@ -156,7 +155,7 @@ async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext)
         await state.set_state(ClientPostFSM.waiting_for_selected_post_id)
 
 # Обработчики барои тугмаҳои пеш ва баъд
-@client_router.callback_query(lambda call: call.data.startswith("driver_prev"))
+@start_router.callback_query(lambda call: call.data.startswith("driver_prev"))
 async def prev_page(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     data = call.data.split(":")
@@ -211,7 +210,7 @@ async def prev_page(call: types.CallbackQuery, state: FSMContext):
     await call.message.answer(f"Саҳифаи {page}", reply_markup=markup)
     await state.set_state(ClientPostFSM.waiting_for_selected_post_id)
 
-@client_router.callback_query(lambda call: call.data.startswith("driver_next"))
+@start_router.callback_query(lambda call: call.data.startswith("driver_next"))
 async def next_page(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     data = call.data.split(":")
@@ -271,7 +270,7 @@ async def next_page(call: types.CallbackQuery, state: FSMContext):
 
 
 # Ҳодисаи пахши тугмаи "Интихоб"
-@client_router.callback_query(lambda call: call.data.startswith("choose"))
+@start_router.callback_query(lambda call: call.data.startswith("choose"))
 async def handle_choose_post(call: CallbackQuery, state: FSMContext):
 
     # ID постро мегирем аз callback data
@@ -282,7 +281,7 @@ async def handle_choose_post(call: CallbackQuery, state: FSMContext):
     await state.set_state(ClientPostFSM.waiting_for_num_clients)
 
 # Қабули шумораи мизоҷон ва сабти мизоҷ дар пойгоҳи додаҳо
-@client_router.message(ClientPostFSM.waiting_for_num_clients)
+@start_router.message(ClientPostFSM.waiting_for_num_clients)
 async def process_num_clients(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_num_clients=message.text)
     from bot_file import bot
@@ -390,7 +389,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
 
 
     
-@client_router.callback_query(lambda call: call.data=="client_registration")
+@start_router.callback_query(lambda call: call.data=="client_registration")
 async def client_registration(call: CallbackQuery, state: FSMContext):
     
     await call.message.answer("Лутфан номатонро нависед:")
@@ -400,14 +399,14 @@ async def client_registration(call: CallbackQuery, state: FSMContext):
 
     
 # Қабули номи мизоҷ ва талаб кардани рақами телефон
-@client_router.message(ClientRegistrationFSM.waiting_for_name)
+@start_router.message(ClientRegistrationFSM.waiting_for_name)
 async def process_name(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_name=message.text)
     await message.answer("Лутфан рақами телефони худро нависед:")
     await state.set_state(ClientRegistrationFSM.waiting_for_phone_number)
 
 # Қабули рақами телефон ва талаб кардани шумораи мизоҷон
-@client_router.message(ClientRegistrationFSM.waiting_for_phone_number)
+@start_router.message(ClientRegistrationFSM.waiting_for_phone_number)
 async def process_phone_number(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_phone_number=message.text)
         
@@ -489,7 +488,7 @@ async def process_phone_number(message: types.Message, state: FSMContext):
 
 
  
-@client_router.callback_query(lambda call: call.data.startswith("another_taxi"))
+@start_router.callback_query(lambda call: call.data.startswith("another_taxi"))
 async def choose_another_taxi(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split(":")
     clientpost_id = int(data[1])
@@ -510,7 +509,7 @@ async def choose_another_taxi(call: types.CallbackQuery, state: FSMContext):
 
 
 # Функсия барои қабул кардани баҳо аз тугмаҳо
-@client_router.callback_query(lambda call: call.data.startswith("rate"))
+@start_router.callback_query(lambda call: call.data.startswith("rate"))
 async def process_rating(call: CallbackQuery):
     from bot_file import bot
     client_user_id=call.from_user.id
@@ -546,7 +545,7 @@ async def process_rating(call: CallbackQuery):
     # Фиристодани паёми тасдиқ барои ронанда
     await bot.send_message(driver.user_id, f"Баҳои нав аз сафар: {rating_value}.")
 
-@client_router.message(Command("my_drivers"))
+@start_router.message(Command("my_drivers"))
 async def my_posts(message: types.Message, state: FSMContext):
     session = AsyncSessionLocal()
     user_id = message.from_user.id
@@ -602,7 +601,7 @@ async def my_posts(message: types.Message, state: FSMContext):
         await state.set_state(ClientPostFSM.waiting_for_from_city)
 
 
-@client_router.message(Command("client_account"))
+@start_router.message(Command("client_account"))
 async def account_info(message: types.Message, state: FSMContext):
     session = AsyncSessionLocal()
     user_id = message.from_user.id
@@ -630,7 +629,7 @@ async def account_info(message: types.Message, state: FSMContext):
         await message.answer("Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
 
 
-@client_router.message(Command("order_a_taxi"))
+@start_router.message(Command("order_a_taxi"))
 async def order_a_taxi(message: types.Message, state: FSMContext):
     keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
     await message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
@@ -639,7 +638,7 @@ async def order_a_taxi(message: types.Message, state: FSMContext):
 
 
 # 6. Ивази маълумотҳо
-@client_router.callback_query(lambda call: call.data == "edit_client_account")
+@start_router.callback_query(lambda call: call.data == "edit_client_account")
 async def edit_client_info(call: types.CallbackQuery):
 
 
@@ -652,7 +651,7 @@ async def edit_client_info(call: types.CallbackQuery):
     await call.message.answer("Чиро тағйир додан мехоҳед?", reply_markup=keyboard)
 
 # Қабули callback-и инлайн-клавиатура ва сабти он
-@client_router.callback_query(lambda call: call.data.startswith("clientedit_"))
+@start_router.callback_query(lambda call: call.data.startswith("clientedit_"))
 async def choose_client_field(call: types.CallbackQuery, state: FSMContext):
     field = call.data.split("_")[1]
 
@@ -669,7 +668,7 @@ async def choose_client_field(call: types.CallbackQuery, state: FSMContext):
     await call.answer()  # Ҷавоб ба callback барои пешгирӣ кардани пайғомҳои 'callback query answer timeout'
 
 # Қабули маълумоти нав ва навсозии база
-@client_router.message(EditClientInfo.waiting_for_new_value)
+@start_router.message(EditClientInfo.waiting_for_new_value)
 async def update_info(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     user_data = await state.get_data()
@@ -694,7 +693,7 @@ async def update_info(message: types.Message, state: FSMContext):
     await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд.")
     
 
-@client_router.callback_query(lambda call: call.data.startswith("declinedriver"))
+@start_router.callback_query(lambda call: call.data.startswith("declinedriver"))
 async def decline_driver(call: types.CallbackQuery):
     from bot_file import bot
     session = AsyncSessionLocal()
