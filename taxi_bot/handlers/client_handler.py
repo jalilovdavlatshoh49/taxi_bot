@@ -303,7 +303,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
     await session.close()
     post_current_clients = post.current_clients        
     post_max_clients = post.max_clients
-    if post_current_clients.isdigit() and num_clients.isdigit() and int(post_current_clients) + int(num_clients) <= int(post_max_clients):
+    if num_clients.isdigit() and int(post_current_clients) + int(num_clients) <= int(post_max_clients):
         if client:
             # Гирифтани маълумотҳои ҷамъшуда
             user_data = await state.get_data()
