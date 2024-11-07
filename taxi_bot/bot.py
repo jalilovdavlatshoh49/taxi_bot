@@ -6,6 +6,7 @@ from handlers.start_handler import start_router
 from handlers.client_handler import start_router as client_router
 from handlers.driver_handler import start_router as driver_router
 from handlers.inline_menu_handler import start_router as inline_menu_router
+from handlers.how_to_use_bot import start router as how_to_use_bot_router
 from aiogram.fsm.storage.memory import MemoryStorage
 from keyboards.menu import set_menu_commands
 from db.database import create_tables
@@ -27,7 +28,7 @@ async def main():
     dp.include_router(client_router)
     dp.include_router(driver_router)
     dp.include_router(inline_menu_router)
-    
+    dp.include_router(how_to_use_bot_router)
     # Оғози боти Telegram
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
