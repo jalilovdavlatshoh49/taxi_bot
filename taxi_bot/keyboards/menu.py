@@ -15,8 +15,8 @@ async def set_menu_commands(bot: Bot):
             BotCommand(command="my_posts", description="Постҳои ман"),
             BotCommand(command="my_clients", description="Клиентҳои ман"),
             BotCommand(command="new_trip", description="Сафари нав ба қайд гирифтан"),
-            BotCommand(command="account", description="Аккаунт ҳамчун ронанда")
-            BotCommand(command="client_account", description="Аккаунт ҳамчун клиент"),
+            BotCommand(command="account", description="Аккаунт ҳамчун ронанда"),
+            BotCommand(command="client_account", description="Аккаунт ҳамчун клиент")
             
        ]
     await bot.set_my_commands(commands)
