@@ -41,7 +41,8 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
 
             # Тугма барои тасдиқ ё ивази маълумотҳо
             markup = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")]
+                [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")],
+                [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")]
             ])
             await call.message.answer(confirmation_text, reply_markup=markup)
         else:
@@ -618,7 +619,8 @@ async def account_info(message: types.Message, state: FSMContext):
 
         # Тугма барои тасдиқ ё ивази маълумотҳо
         markup = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")]
+            [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")],
+            [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")]
         ])
         await message.answer(confirmation_text, reply_markup=markup)
     else:
