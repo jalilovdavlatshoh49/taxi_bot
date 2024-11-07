@@ -14,8 +14,9 @@ from sqlalchemy import desc, select, update
 from math import ceil
 from states.client_states import ClientPostFSM, ClientRegistrationFSM, EditClientInfo
 from keyboards.get_driver_post import build_pagination_keyboard, build_post_keyboard
-from start_handler import start_router
 
+
+start_router = Router()
 
 cities_per_page = 5
 
@@ -285,7 +286,7 @@ async def handle_choose_post(call: CallbackQuery, state: FSMContext):
 @start_router.message(ClientPostFSM.waiting_for_num_clients)
 async def process_num_clients(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_num_clients=message.text)
-    from bot_file import bot
+    bot = message.bot
     session = AsyncSessionLocal()
     user_data = await state.get_data()
     post_id = user_data["waiting_for_selected_post_id"]
@@ -411,7 +412,7 @@ async def process_name(message: types.Message, state: FSMContext):
 async def process_phone_number(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_phone_number=message.text)
         
-    from bot_file import bot
+    bot = message.bot
     
 
     # Маълумоти мизоҷро ёфтан
@@ -512,7 +513,7 @@ async def choose_another_taxi(call: types.CallbackQuery, state: FSMContext):
 # Функсия барои қабул кардани баҳо аз тугмаҳо
 @start_router.callback_query(lambda call: call.data.startswith("rate"))
 async def process_rating(call: CallbackQuery):
-    from bot_file import bot
+    bot = message.bot
     client_user_id=call.from_user.id
     # Парс кардани callback_data
     data=call.data.split(":")
@@ -697,7 +698,7 @@ async def update_info(message: types.Message, state: FSMContext):
 
 @start_router.callback_query(lambda call: call.data.startswith("declinedriver"))
 async def decline_driver(call: types.CallbackQuery):
-    from bot_file import bot
+    bot = message.bot
     session = AsyncSessionLocal()
     user_id = call.message.from_user.id
 
