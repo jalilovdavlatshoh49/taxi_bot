@@ -513,7 +513,7 @@ async def choose_another_taxi(call: types.CallbackQuery, state: FSMContext):
 # Функсия барои қабул кардани баҳо аз тугмаҳо
 @start_router.callback_query(lambda call: call.data.startswith("rate"))
 async def process_rating(call: CallbackQuery):
-    bot = message.bot
+    bot = call.bot
     client_user_id=call.from_user.id
     # Парс кардани callback_data
     data=call.data.split(":")
@@ -698,7 +698,7 @@ async def update_info(message: types.Message, state: FSMContext):
 
 @start_router.callback_query(lambda call: call.data.startswith("declinedriver"))
 async def decline_driver(call: types.CallbackQuery):
-    bot = message.bot
+    bot = call.bot
     session = AsyncSessionLocal()
     user_id = call.message.from_user.id
 
