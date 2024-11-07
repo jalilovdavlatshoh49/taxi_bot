@@ -7,14 +7,12 @@ from keyboards.pagination import generate_pagination_keyboard
 from states.driver_states import RegisterDriverFSM
 from sqlalchemy import select
 from states.client_states import ClientPostFSM, ClientRegistrationFSM
+from start_handler import start_router
 
-
-
-inline_menu_router = Router()
 
 
 # Функсияи асосӣ барои /menu
-@inline_menu_router.message(Command("menu"))
+@start_router.message(Command("menu"))
 async def menu(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Обуна шудан ба група", url="https://t.me/ronanda_bot")],
@@ -30,7 +28,7 @@ async def menu(message: types.Message):
     await message.answer("Меню:", reply_markup=keyboard)
 
 # Ҳангоми пахши тугмаҳои меню
-@inline_menu_router.callback_query(lambda c: c.data)
+@start_router.callback_query(lambda c: c.data)
 async def process_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data
     user_id = call.from_user.id
