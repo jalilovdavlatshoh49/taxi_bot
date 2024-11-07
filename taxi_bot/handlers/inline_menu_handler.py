@@ -7,8 +7,8 @@ from keyboards.pagination import generate_pagination_keyboard
 from states.driver_states import RegisterDriverFSM
 from sqlalchemy import select
 from states.client_states import ClientPostFSM, ClientRegistrationFSM
-from start_handler import start_router
 
+start_router = Router()
 
 
 # Функсияи асосӣ барои /menu
