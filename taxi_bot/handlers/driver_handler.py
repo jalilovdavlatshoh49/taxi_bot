@@ -804,6 +804,13 @@ async def show_help(message: types.Message):
     ])
     await message.answer("Аз навигариҳо бохабар шавед.", reply_markup=keyboard)
 
+@start_router.message(Command("how_to_use_bot"))
+async def show_help(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Истифодабарии бот", url="https://t.me/ronanda_bot")]
+    ])
+    await message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
+
 
 # Хандлер барои қабул кардан
 @start_router.callback_query(lambda c: c.data.startswith("accept_"))
