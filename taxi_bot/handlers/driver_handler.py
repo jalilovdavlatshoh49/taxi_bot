@@ -8,12 +8,12 @@ from data.cities import cities
 from math import ceil
 from states.driver_states import CarImageFSM, RegisterDriverFSM, EditDriverInfo, DriverTripFSM
 from sqlalchemy import desc, select, delete, update
+from start_handler import start_router
 
-driver_router=Router()
 
 
 # Коркарди пахши тугмаи "Ронанда"
-@driver_router.callback_query(lambda call: call.data.startswith("startdriver"))
+@start_router.callback_query(lambda call: call.data.startswith("startdriver"))
 async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
     user_id_data = call.data.split(":")
     user_id = user_id_data[1]
@@ -80,7 +80,7 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
 
 
 # 2. Қабули номи ронанда
-@driver_router.message(RegisterDriverFSM.waiting_for_name)
+@start_router.message(RegisterDriverFSM.waiting_for_name)
 async def get_driver_name(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_driver_name=message.text)
     await message.answer("Лутфан рақами телефонро ворид кунед:")
@@ -88,7 +88,7 @@ async def get_driver_name(message: types.Message, state: FSMContext):
 
 
 # 3. Қабули рақами телефон
-@driver_router.message(RegisterDriverFSM.waiting_for_phone)
+@start_router.message(RegisterDriverFSM.waiting_for_phone)
 async def get_driver_phone(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_driver_phone=message.text)
     
@@ -117,7 +117,7 @@ async def get_driver_phone(message: types.Message, state: FSMContext):
 
 
 # 4. Қабули сурат (URL ё пайванди сурат)
-@driver_router.message(CarImageFSM.waiting_for_car_image)
+@start_router.message(CarImageFSM.waiting_for_car_image)
 async def get_car_image(message: types.Message, state: FSMContext):
     if message.photo:
         car_image = message.photo[-1].file_id
@@ -139,7 +139,7 @@ async def get_car_image(message: types.Message, state: FSMContext):
         await state.set_state(CarImageFSM.waiting_for_car_image)
 
 
-@driver_router.callback_query(lambda call: call.data == "done_car_image")
+@start_router.callback_query(lambda call: call.data == "done_car_image")
 async def finish_image_upload(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     
@@ -200,7 +200,7 @@ async def finish_image_upload(call: types.CallbackQuery, state: FSMContext):
 
 
 # 6. Ивази маълумотҳо
-@driver_router.callback_query(lambda call: call.data == "edit_driver_account")
+@start_router.callback_query(lambda call: call.data == "edit_driver_account")
 async def edit_driver_info(call: types.CallbackQuery):
     
     # Сохтани инлайн-клавиатура барои интихоб кардани майдон
@@ -213,7 +213,7 @@ async def edit_driver_info(call: types.CallbackQuery):
     await call.message.answer(text="Чиро тағйир додан мехоҳед?", reply_markup=keyboard)
 
 # Қабули callback-и инлайн-клавиатура ва сабти он
-@driver_router.callback_query(lambda call: call.data.startswith("driveredit_"))
+@start_router.callback_query(lambda call: call.data.startswith("driveredit_"))
 async def choose_field(call: types.CallbackQuery, state: FSMContext):
     field = call.data.split("_")[1]
 
@@ -233,7 +233,7 @@ async def choose_field(call: types.CallbackQuery, state: FSMContext):
     
     
 # Қабули маълумоти нав ва навсозии база
-@driver_router.message(EditDriverInfo.waiting_for_new_value)
+@start_router.message(EditDriverInfo.waiting_for_new_value)
 async def update_info(message: types.Message, state: FSMContext):
     session = AsyncSessionLocal()
     user_id = message.from_user.id
@@ -293,7 +293,7 @@ async def update_info(message: types.Message, state: FSMContext):
     
 
         
-@driver_router.callback_query(lambda call: call.data == "register_trip")
+@start_router.callback_query(lambda call: call.data == "register_trip")
 async def start_trip_registration(call: CallbackQuery, state: FSMContext):
     keyboard = generate_pagination_keyboard(page=0, callback_prefix="from_city")
     await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
@@ -301,7 +301,7 @@ async def start_trip_registration(call: CallbackQuery, state: FSMContext):
 
 
 # Хандлер барои интихоби шаҳри оғоз
-@driver_router.callback_query(lambda call: call.data.startswith("from_city"))
+@start_router.callback_query(lambda call: call.data.startswith("from_city"))
 async def process_from_city_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
     
@@ -319,7 +319,7 @@ async def process_from_city_callback(call: types.CallbackQuery, state: FSMContex
         await state.set_state(DriverTripFSM.to_city)
 
 # Хандлер барои интихоби шаҳри сафар
-@driver_router.callback_query(lambda call: call.data.startswith("to_city"))
+@start_router.callback_query(lambda call: call.data.startswith("to_city"))
 async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
     
@@ -337,7 +337,7 @@ async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext)
 
 
 # Гирифтани нархи сафар
-@driver_router.message(DriverTripFSM.price)
+@start_router.message(DriverTripFSM.price)
 async def process_price(message: Message, state: FSMContext):
     try:
         price = float(message.text)
@@ -348,7 +348,7 @@ async def process_price(message: Message, state: FSMContext):
         await message.answer("Лутфан нархи дуруст ворид кунед (фақат рақамҳо).")
 
 # Гирифтани шумораи мизоҷон
-@driver_router.message(DriverTripFSM.max_clients)
+@start_router.message(DriverTripFSM.max_clients)
 async def process_max_clients(message: Message, state: FSMContext):
     try:
         max_clients = int(message.text)
@@ -359,7 +359,7 @@ async def process_max_clients(message: Message, state: FSMContext):
         await message.answer("Лутфан як рақами дуруст ворид кунед.")
 
 # Гирифтани комментари
-@driver_router.message(DriverTripFSM.comment)
+@start_router.message(DriverTripFSM.comment)
 async def process_comment(message: Message, state: FSMContext):
     comment = message.text if message.text.lower() != "не" else None
     await state.update_data(comment=comment)
@@ -434,7 +434,7 @@ async def process_comment(message: Message, state: FSMContext):
     
 
 # Сафарро онлайн кардан
-@driver_router.callback_query(lambda call: call.data.startswith("set_online"))
+@start_router.callback_query(lambda call: call.data.startswith("set_online"))
 async def set_trip_online(call: CallbackQuery):
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
@@ -480,7 +480,7 @@ async def set_trip_online(call: CallbackQuery):
     await call.message.answer(driver_info, reply_markup=keyboard)
     
 # Сафарро офлайн кардан
-@driver_router.callback_query(lambda call: call.data.startswith("set_offline"))
+@start_router.callback_query(lambda call: call.data.startswith("set_offline"))
 async def set_trip_offline(call: CallbackQuery):
     trip_id = int(call.data.split(":")[1])
     yes_or_no_set_offline = InlineKeyboardMarkup(inline_keyboard=[
@@ -489,7 +489,7 @@ async def set_trip_offline(call: CallbackQuery):
     ])
     await call.message.answer("Пости ОФЛАЙНРО клиент дида наметавонад.\n\n Агар клиент қабул карда бошед, ба клиентҳо хабари радъ кардани сафар мефистем.\n\n Мехоҳед ОФЛАЙН кунед?", reply_markup=yes_or_no_set_offline)
 
-@driver_router.callback_query(lambda call: call.data.startswith("noset_offline"))
+@start_router.callback_query(lambda call: call.data.startswith("noset_offline"))
 async def no_set_offline(call: CallbackQuery):
     session = AsyncSessionLocal()
     trip_id = int(call.data.split(":")[1])
@@ -522,7 +522,7 @@ async def no_set_offline(call: CallbackQuery):
 
 
 
-@driver_router.callback_query(lambda call: call.data.startswith("yesset_offline"))
+@start_router.callback_query(lambda call: call.data.startswith("yesset_offline"))
 async def yes_set_offline(call: CallbackQuery):
     from bot_file import bot
     session = AsyncSessionLocal()
@@ -594,7 +594,7 @@ async def yes_set_offline(call: CallbackQuery):
         
         
 # Удалит кардани сафар
-@driver_router.callback_query(lambda call: call.data.startswith("delete_trip"))
+@start_router.callback_query(lambda call: call.data.startswith("delete_trip"))
 async def delete_trip(call: CallbackQuery,):
     from bot_file import bot
     session = AsyncSessionLocal()
@@ -681,14 +681,14 @@ async def delete_trip(call: CallbackQuery,):
         
         
         
-@driver_router.callback_query(lambda call: call.data == "new_trip")
+@start_router.callback_query(lambda call: call.data == "new_trip")
 async def start_new_trip(call: CallbackQuery, state: FSMContext):
     await start_trip_registration(call, state)
     
     
     
 # Хандлер барои /account (фақат барои ронандагон)
-@driver_router.message(Command("account"))
+@start_router.message(Command("account"))
 async def account_info(message: types.Message, state: FSMContext):
     session = AsyncSessionLocal()
     driver_result = await session.execute(select(Driver).where(Driver.user_id == message.from_user.id))
@@ -737,7 +737,7 @@ async def account_info(message: types.Message, state: FSMContext):
 
     
 # Хандлер барои /my_posts (фақат барои ронандагон)
-@driver_router.message(Command("my_posts"))
+@start_router.message(Command("my_posts"))
 async def my_posts(message: types.Message, state: FSMContext):
     session = AsyncSessionLocal()
 
@@ -789,7 +789,7 @@ async def my_posts(message: types.Message, state: FSMContext):
 
     
 # Хандлер барои /new_trip (фақат барои ронандагон)
-@driver_router.message(Command("new_trip"))
+@start_router.message(Command("new_trip"))
 async def new_trip(message: types.Message):
     new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Сафари нав ба қайд гирифтан", callback_data="new_trip")],
@@ -797,7 +797,7 @@ async def new_trip(message: types.Message):
     await message.answer("Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
 
 # Хандлер барои /help (дастрас барои ҳама)
-@driver_router.message(Command("taxi_channel"))
+@start_router.message(Command("taxi_channel"))
 async def show_help(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Обуна шудан ба група", url="https://t.me/ronanda_bot")]
@@ -806,7 +806,7 @@ async def show_help(message: types.Message):
 
 
 # Хандлер барои қабул кардан
-@driver_router.callback_query(lambda c: c.data.startswith("accept_"))
+@start_router.callback_query(lambda c: c.data.startswith("accept_"))
 async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
     from bot_file import bot
 
@@ -876,7 +876,7 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
 
     
 # Хандлер барои рад кардан
-@driver_router.callback_query(lambda c: c.data.startswith("decline_"))
+@start_router.callback_query(lambda c: c.data.startswith("decline_"))
 async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
 
     from bot_file import bot
@@ -933,7 +933,7 @@ async def handle_decline_callback(call: types.CallbackQuery, state: FSMContext):
 
  
 
-@driver_router.callback_query(lambda call: call.data.startswith("start_trip"))
+@start_router.callback_query(lambda call: call.data.startswith("start_trip"))
 async def start_trip(call: CallbackQuery):
     from bot_file import bot
     session = AsyncSessionLocal()
@@ -964,7 +964,7 @@ async def start_trip(call: CallbackQuery):
     await call.message.answer("РОҲИ САФЕД", reply_markup=end_trip_keyboard)
     await session.close()
 
-@driver_router.callback_query(lambda call: call.data.startswith("end_trip"))
+@start_router.callback_query(lambda call: call.data.startswith("end_trip"))
 async def end_trip(call: CallbackQuery):
     from bot_file import bot
     
@@ -997,7 +997,7 @@ async def end_trip(call: CallbackQuery):
     await call.message.answer(f"Сафари бо ID {trip_id} ба итмом расид.")
     
 
-@driver_router.message(Command("my_clients"))
+@start_router.message(Command("my_clients"))
 async def my_posts(message: types.Message):
     session = AsyncSessionLocal()
     user_id = message.from_user.id
