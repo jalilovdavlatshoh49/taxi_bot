@@ -294,7 +294,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
     post_id = user_data["waiting_for_selected_post_id"]
     num_clients = user_data['waiting_for_num_clients']
 
-    state.clear()        
+            
     # Маълумоти мизоҷро ёфтан
     user_id = message.from_user.id
 
@@ -313,7 +313,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
             from_city = user_data['waiting_for_client_from_city']
             to_city = user_data['waiting_for_client_to_city']
             post_id = user_data["waiting_for_selected_post_id"]
-            
+            await state.clear()        
             # Сабти мизоҷ ба пойгоҳи додаҳо
             new_client = ClientPost(
                 num_clients=num_clients,
@@ -437,7 +437,7 @@ async def process_phone_number(message: types.Message, state: FSMContext):
             await session.close()           
     
 
-    state.clear()
+    await state.clear()
     async with AsyncSessionLocal() as session:    
         client_result = await session.execute(select(Client).where(Client.user_id == user_id))
         client = client_result.scalars().first()
