@@ -7,7 +7,8 @@ async def set_menu_commands(bot: Bot):
     from bot import bot
     
     commands = [
-            BotCommand(command="taxi_channel", description="Ба канал обуна шавед"),
+            BotCommand(command="how_to_use_bot", description="Истифодабарии бот"),
+            BotCommand(command="taxi_channel", description="Ба група обуна шавед"),
             BotCommand(command="menu", description="Меню"),
             BotCommand(command="order_a_taxi", description="Фармоиши таксӣ"),
             BotCommand(command="my_drivers", description="Ронандаи ман"),
