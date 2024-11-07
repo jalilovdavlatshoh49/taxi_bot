@@ -3,7 +3,7 @@ from aiogram.filters import Text
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-start_router = Routet()
+start_router = Router()
 
 # callback_data="usage_guide"
 # Қисмати шарҳҳо
