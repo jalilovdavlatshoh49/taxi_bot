@@ -795,7 +795,7 @@ async def new_trip(message: types.Message):
     ])        
     await message.answer("Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
 
-# Хандлер барои /help (дастрас барои ҳама)
+
 @start_router.message(Command("taxi_channel"))
 async def show_help(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
@@ -806,7 +806,7 @@ async def show_help(message: types.Message):
 @start_router.message(Command("how_to_use_bot"))
 async def show_help(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Истифодабарии бот", url="https://t.me/ronanda_bot")]
+        [InlineKeyboardButton(text="Истифодабарии бот", callback_data="usage_guide")]
     ])
     await message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
 
