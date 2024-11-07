@@ -15,7 +15,7 @@ start_router = Router()
 @start_router.message(Command("menu"))
 async def menu(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Истифодабарии бот", url="https://t.me/ronanda_bot")],
+        [InlineKeyboardButton(text="Истифодабарии бот", callback_data="usage_guide")],
         [InlineKeyboardButton(text="Обуна шудан ба група", url="https://t.me/ronanda_bot")],
         [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")],
         [InlineKeyboardButton(text="Клиентҳои ман", callback_data="inline_my_clients")],
