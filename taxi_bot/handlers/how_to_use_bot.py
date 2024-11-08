@@ -121,6 +121,6 @@ async def show_usage_part(callback: types.CallbackQuery):
     menu_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await message.answer("Меню:", reply_markup=menu_keyboard)
+    await callback.message.answer("Меню:", reply_markup=menu_keyboard)
 
 
