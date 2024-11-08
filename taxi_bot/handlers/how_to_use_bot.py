@@ -1,10 +1,9 @@
-from aiogram import Router, types
+from aiogram import Router, types, F
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 start_router = Router()
 
-
-# Матни маълумот барои тугмаҳо
+# Text for each button's information
 usage_parts = {
     "how_order_taxi": """Чӣ тавр фармоиши таксӣ додан?
 
@@ -18,7 +17,6 @@ usage_parts = {
 
 Пас аз интихоби ронанда, ба ӯ хабар фиристода мешавад. Интизор шавед, то ронанда қабул ё рад кардани фармоиши Шуморо ба Шумо хабар диҳад.
 """,
-
     "how_driver_list": """Чӣ тавр рӯйхати сафар барои ронанда навиштан
 
 1. Ба бот ворид шавед.
@@ -29,7 +27,6 @@ usage_parts = {
 
 Бо анҷом додани ин қадамҳо, Шумо сабти ном шудед ва метавонед барои сафар пост эҷод кунед.
 """,
-
     "how_create_post": """Шарҳи тугмаҳои бот
 
 Истифодабарии бот – Бо пахши ин тугма, Шумо ба канале ворид мешавед, ки дар он тарзи истифода бурдани ботро мефаҳмонанд.
@@ -38,46 +35,37 @@ usage_parts = {
 """,
 }
 
-# Функсия барои сохтани клавиатура бо тугмаҳои Inline
-def get_keyboard(exclude_key: str) -> InlineKeyboardMarkup:
+# Function to create an inline keyboard with specified buttons
+def get_keyboard(exclude_key: str = None) -> InlineKeyboardMarkup:
     buttons = [
-        [("how_order_taxi", "Фармоиши таксӣ")],
-        [("how_driver_list", "Рӯйхати ронандаҳо")],
-        [("how_create_post", "Эҷоди пост")]
+        InlineKeyboardButton("Фармоиши таксӣ", callback_data="how_order_taxi"),
+        InlineKeyboardButton("Рӯйхати ронандаҳо", callback_data="how_driver_list"),
+        InlineKeyboardButton("Эҷоди пост", callback_data="how_create_post")
     ]
-
-    keyboard = InlineKeyboardMarkup()
-
-    for row in buttons:
-        inline_buttons = [
-            InlineKeyboardButton(text=text, callback_data=key)
-            for key, text in row if key != exclude_key
-        ]
-        if inline_buttons:
-            keyboard.add(*inline_buttons)
-
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[btn] for btn in buttons if btn.callback_data != exclude_key]
+    )
     return keyboard
 
-# Ҳолати пахши тугмаи "Истифодабарии бот"
-@start_router.callback_query(lambda c: c.data == "usage_guide")
+# Initial menu handler
+@start_router.callback_query(F.data == "usage_guide")
 async def show_usage_guide(call: types.CallbackQuery):
-    keyboard = get_keyboard(exclude_key="")
+    keyboard = get_keyboard()
     await call.message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
     await call.answer()
 
-# Ҳолати пахши ҳар як қисми истифодабарӣ
-@start_router.callback_query(lambda c: c.data in ["how_order_taxi", "how_driver_list", "how_create_post"])
+# Handler for each usage part button
+@start_router.callback_query(F.data.in_({"how_order_taxi", "how_driver_list", "how_create_post"}))
 async def show_usage_part(call: types.CallbackQuery):
-    selected_part = callback.data
+    selected_part = call.data
     text = usage_parts.get(selected_part, "Маълумот дастрас нест")
     keyboard = get_keyboard(exclude_key=selected_part)
+    
     await call.message.edit_text(text, reply_markup=keyboard)
     await call.answer()
 
-    # Меню барои бозгашт ба феҳристи аввала
-    menu_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
-    ])
+    # Add main menu button
+    menu_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton("Меню", callback_data="inline_menu")]]
+    )
     await call.message.answer("Меню:", reply_markup=menu_keyboard)
-
-
