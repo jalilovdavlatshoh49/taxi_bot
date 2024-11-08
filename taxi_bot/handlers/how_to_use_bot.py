@@ -94,14 +94,6 @@ usage_parts = {
 """
 }
 
-# Функсияи намоиши қисми истифодабарии бот
-def get_keyboard(exclude_key: str):
-    keyboard = InlineKeyboardBuilder()
-    for key, text in [("how_order_taxi", "Фармоиши таксӣ"), ("how_driver_list", "Рӯйхати ронандаҳо"), ("how_create_post", "Эҷоди пост")]:
-        if key != exclude_key:
-            keyboard.button(text=text, callback_data=key)
-    return keyboard.as_markup()
-
 # Ҳолати пахши тугмаи "Истифодабарии бот"
 @start_router.callback_query(lambda c: c.data == "usage_guide")
 async def show_usage_guide(callback: types.CallbackQuery):
@@ -115,8 +107,14 @@ async def show_usage_part(callback: types.CallbackQuery):
     selected_part = callback.data
     text = usage_parts[selected_part]
     keyboard = get_keyboard(exclude_key=selected_part)
+    
+    # Таҳрир кардани паём
     await callback.message.edit_text(text, reply_markup=keyboard)
+    
+    # Ҷавоб ба тугма
     await callback.answer()
+
+    # Ирсоли меню бо тугмаи "Меню"
     menu_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
