@@ -27,14 +27,14 @@ async def on_start(message: types.Message):
 # Менюи асосӣ барои кӯмак бо қисматҳои гуногуни иттилоот
 
 @start_router.callback_query(lambda c: c.data == "usage_guide")
-async def show_help(message: types.Message):
+async def show_help(call: CallbackQuery):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
         [InlineKeyboardButton(text="Рӯйхати ронанда", callback_data="how_driver_list")],
         [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    await call.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
 # Ҳар як функсия барои нишон додани иттилооти дахлдор
 @start_router.callback_query(lambda c: c.data == "how_order_taxi")
