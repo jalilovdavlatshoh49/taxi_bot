@@ -31,7 +31,7 @@ async def show_help(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
         [InlineKeyboardButton(text="Рӯйхати ронанда", callback_data="how_driver_list")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")]
+        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
     await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
@@ -51,7 +51,7 @@ async def order_taxi_info(callback_query: CallbackQuery):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Рӯйхати ронанда", callback_data="how_driver_list")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")]
+        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
     await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
@@ -70,7 +70,7 @@ async def driver_list_info(callback_query: CallbackQuery):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")]
+        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
     await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
