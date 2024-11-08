@@ -48,10 +48,13 @@ def get_keyboard(exclude_key: str = None) -> InlineKeyboardMarkup:
     return keyboard
 
 # Initial menu handler
-@start_router.callback_query(F.data == "usage_guide")
+@start_router.callback_query(lambda c: c.data.startswith("usage_guide"))
 async def show_usage_guide(call: types.CallbackQuery):
+    user_id_data = call.data.split(":")
+    user_id = user_id_data[1]
+    bot = call.bot
     keyboard = get_keyboard()
-    await call.message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
+    await bot.send_message(chat_id=user_id, text="Тарзи истифода бурдани бот", reply_markup=keyboard)
     await call.answer()
 
 # Handler for each usage part button
