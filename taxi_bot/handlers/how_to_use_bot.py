@@ -60,24 +60,24 @@ def get_keyboard(exclude_key: str) -> InlineKeyboardMarkup:
 
 # Ҳолати пахши тугмаи "Истифодабарии бот"
 @start_router.callback_query(lambda c: c.data == "usage_guide")
-async def show_usage_guide(callback: types.CallbackQuery):
+async def show_usage_guide(call: types.CallbackQuery):
     keyboard = get_keyboard(exclude_key="")
-    await callback.message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
-    await callback.answer()
+    await call.message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
+    await call.answer()
 
 # Ҳолати пахши ҳар як қисми истифодабарӣ
 @start_router.callback_query(lambda c: c.data in ["how_order_taxi", "how_driver_list", "how_create_post"])
-async def show_usage_part(callback: types.CallbackQuery):
+async def show_usage_part(call: types.CallbackQuery):
     selected_part = callback.data
     text = usage_parts.get(selected_part, "Маълумот дастрас нест")
     keyboard = get_keyboard(exclude_key=selected_part)
-    await callback.message.edit_text(text, reply_markup=keyboard)
-    await callback.answer()
+    await call.message.edit_text(text, reply_markup=keyboard)
+    await call.answer()
 
     # Меню барои бозгашт ба феҳристи аввала
     menu_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await callback.message.answer("Меню:", reply_markup=menu_keyboard)
+    await call.message.answer("Меню:", reply_markup=menu_keyboard)
 
 
