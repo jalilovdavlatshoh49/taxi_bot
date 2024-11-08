@@ -1,7 +1,7 @@
 from aiogram import Router, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-
+start_router = Router()
 
 
 # Матни маълумот барои тугмаҳо
