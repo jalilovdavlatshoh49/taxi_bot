@@ -1,6 +1,6 @@
 from aiogram import Router, types
 from aiogram.filters import CommandStart
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from words.words import *
 # Роутер барои идоракунии фармонҳо
