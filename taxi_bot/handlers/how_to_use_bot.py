@@ -104,7 +104,7 @@ def get_keyboard(exclude_key: str):
     return keyboard.as_markup()
 
 # Ҳолати пахши тугмаи "Истифодабарии бот"
-@start_router.callback_query(lambda c: c.data == "usage_guide"))
+@start_router.callback_query(lambda c: c.data == "usage_guide")
 async def show_usage_guide(callback: types.CallbackQuery):
     keyboard = get_keyboard(exclude_key="")
     await callback.message.answer("Тарзи истифода бурдани бот", reply_markup=keyboard)
