@@ -1,10 +1,10 @@
 from aiogram import Router, types
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.storage.memory import MemoryStorage
 
-start_router = Router()
 
-# Қисмати шарҳҳо
+
+# Матни маълумот барои тугмаҳо
 usage_parts = {
     "how_order_taxi": """Чӣ тавр фармоиши таксӣ додан?
 
@@ -17,8 +17,6 @@ usage_parts = {
 7. Ронандаи дилписандатонро бо пахши тугмаи 'Интихоб' интихоб кунед.
 
 Пас аз интихоби ронанда, ба ӯ хабар фиристода мешавад. Интизор шавед, то ронанда қабул ё рад кардани фармоиши Шуморо ба Шумо хабар диҳад.
-
-Эзоҳ: Дар меню функсияҳои иловагӣ низ мавҷуданд. Барои истифодаи пурра аз имкониятҳои бот, тугмаи менюро пахш намуда, ҳамаи функсияҳоро санҷед.
 """,
 
     "how_driver_list": """Чӣ тавр рӯйхати сафар барои ронанда навиштан
@@ -40,10 +38,8 @@ usage_parts = {
 """,
 }
 
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+# Функсия барои сохтани клавиатура бо тугмаҳои Inline
 def get_keyboard(exclude_key: str) -> InlineKeyboardMarkup:
-    # Маърифати рӯйхати тугмаҳо ҳамчун рӯйхати дохили рӯйхатҳо
     buttons = [
         [("how_order_taxi", "Фармоиши таксӣ")],
         [("how_driver_list", "Рӯйхати ронандаҳо")],
@@ -57,7 +53,7 @@ def get_keyboard(exclude_key: str) -> InlineKeyboardMarkup:
             InlineKeyboardButton(text=text, callback_data=key)
             for key, text in row if key != exclude_key
         ]
-        if inline_buttons:  # Фақат агар дар сатри тугмаҳо мавҷуд бошад
+        if inline_buttons:
             keyboard.add(*inline_buttons)
 
     return keyboard
@@ -73,7 +69,7 @@ async def show_usage_guide(callback: types.CallbackQuery):
 @start_router.callback_query(lambda c: c.data in ["how_order_taxi", "how_driver_list", "how_create_post"])
 async def show_usage_part(callback: types.CallbackQuery):
     selected_part = callback.data
-    text = usage_parts[selected_part]
+    text = usage_parts.get(selected_part, "Маълумот дастрас нест")
     keyboard = get_keyboard(exclude_key=selected_part)
     await callback.message.edit_text(text, reply_markup=keyboard)
     await callback.answer()
@@ -84,9 +80,4 @@ async def show_usage_part(callback: types.CallbackQuery):
     ])
     await callback.message.answer("Меню:", reply_markup=menu_keyboard)
 
-# Ҳолати пахши тугмаи "Меню"
-@start_router.callback_query(lambda c: c.data == "inline_menu")
-async def show_main_menu(callback: types.CallbackQuery):
-    keyboard = get_keyboard(exclude_key="")
-    await callback.message.edit_text("Тарзи истифода бурдани бот", reply_markup=keyboard)
-    await callback.answer()
+
