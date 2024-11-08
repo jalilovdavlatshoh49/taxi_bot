@@ -40,13 +40,27 @@ usage_parts = {
 """,
 }
 
-# Функсияи намоиши қисми истифодабарии бот
-def get_keyboard(exclude_key: str):
-    keyboard = InlineKeyboardBuilder()
-    for key, text in [("how_order_taxi", "Фармоиши таксӣ"), ("how_driver_list", "Рӯйхати ронандаҳо"), ("how_create_post", "Эҷоди пост")]:
-        if key != exclude_key:
-            keyboard.button(text=text, callback_data=key)
-    return keyboard.as_markup()
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+def get_keyboard(exclude_key: str) -> InlineKeyboardMarkup:
+    # Маърифати рӯйхати тугмаҳо ҳамчун рӯйхати дохили рӯйхатҳо
+    buttons = [
+        [("how_order_taxi", "Фармоиши таксӣ")],
+        [("how_driver_list", "Рӯйхати ронандаҳо")],
+        [("how_create_post", "Эҷоди пост")]
+    ]
+
+    keyboard = InlineKeyboardMarkup()
+
+    for row in buttons:
+        inline_buttons = [
+            InlineKeyboardButton(text=text, callback_data=key)
+            for key, text in row if key != exclude_key
+        ]
+        if inline_buttons:  # Фақат агар дар сатри тугмаҳо мавҷуд бошад
+            keyboard.add(*inline_buttons)
+
+    return keyboard
 
 # Ҳолати пахши тугмаи "Истифодабарии бот"
 @start_router.callback_query(lambda c: c.data == "usage_guide")
