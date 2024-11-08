@@ -51,7 +51,7 @@ def get_keyboard(exclude_key: str = None) -> InlineKeyboardMarkup:
 @start_router.callback_query(lambda c: c.data == "usage_guide")
 async def show_usage_guide(call: types.CallbackQuery):
     keyboard = get_keyboard()
-    await call.answer(chat_id=user_id, text="Тарзи истифода бурдани бот", reply_markup=keyboard)
+    await call.message.answer(text="Тарзи истифода бурдани бот", reply_markup=keyboard)
     await call.answer()
 
 # Handler for each usage part button
