@@ -69,13 +69,7 @@ async def driver_list_info(callback_query: CallbackQuery):
                    "3. Бот сурати мошинро талаб мекунад — акси мошинатонро ирсол кунед.\n\n"
                    "Бо анҷом додани ин қадамҳо, Шумо сабти ном шудед ва метавонед барои сафар пост эҷод кунед.\n\n",
     
-    "Чӣ тавр пост эҷод кардан:\n\n"
-                   "1. Тугмаи 'Сафари нав ба қайд гирифтан'-ро пахш кунед.\n\n"
-                   "2. Шаҳре ки сафарро оғоз мекунед, интихоб намоед.\n\n"
-                   "3. Шаҳре ки мехоҳед ба он сафар кунед, интихоб кунед.\n\n"
-                   "4. Бот нархи сафарро мепурсад — онро ворид намоед.\n\n"
-                   "5. Сипас бот шумораи клиентҳоро, ки барои сафар мехоҳед, мепурсад — шумораро ворид кунед.\n\n"
-                   "6. Дар охир, бот аз Шумо хоҳиши навиштани коментарияро мепурсад. Агар коментария надошта бошед, 'не' нависед, вагарна коментария дар бораи сафар нависед."
+    
 }
     )
     await callback_query.message.edit_text(text)
@@ -93,12 +87,13 @@ async def driver_list_info(callback_query: CallbackQuery):
 @start_router.callback_query(lambda c: c.data == "how_create_post")
 async def create_post_info(callback_query: CallbackQuery):
     text = (
-        "Шарҳи тугмаҳои бот\n\n"
-        "Истифодабарии бот – Бо пахши ин тугма, Шумо ба канале ворид мешавед, ки дар он тарзи истифода бурдани ботро мефаҳмонанд.\n"
-        "Обуна шудан ба гурӯҳ – Ин тугма Шуморо ба гурӯҳи махсус мебарад.\n"
-        "Фармоиши таксӣ – Бо ин тугма Шумо метавонед таксиро интихоб кунед.\n"
-        "...\n"
-        "Ба роҳ баромадан – Вақте ки шумораи муштариёни лозимӣ ҷамъ шуд.\n"
+        "Чӣ тавр пост эҷод кардан:\n\n"
+                   "1. Тугмаи 'Сафари нав ба қайд гирифтан'-ро пахш кунед.\n\n"
+                   "2. Шаҳре ки сафарро оғоз мекунед, интихоб намоед.\n\n"
+                   "3. Шаҳре ки мехоҳед ба он сафар кунед, интихоб кунед.\n\n"
+                   "4. Бот нархи сафарро мепурсад — онро ворид намоед.\n\n"
+                   "5. Сипас бот шумораи клиентҳоро, ки барои сафар мехоҳед, мепурсад — шумораро ворид кунед.\n\n"
+                   "6. Дар охир, бот аз Шумо хоҳиши навиштани коментарияро мепурсад. Агар коментария надошта бошед, 'не' нависед. Дар бораи сафар коментария нависед."
     )
     await callback_query.message.edit_text(text)
 
@@ -125,8 +120,8 @@ async def create_post_info(callback_query: CallbackQuery):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
-        [InlineKeyboardButton(text="Рӯйхати ронанда", callback_data="how_driver_list")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
+        [InlineKeyboardButton(text="Регистратсияи ронанда", callback_data="how_driver_list")],
+        [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
     await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
