@@ -29,8 +29,8 @@ async def on_start(message: types.Message):
 @start_router.callback_query(lambda c: c.data == "usage_guide")
 async def show_help(call: CallbackQuery):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
-        [InlineKeyboardButton(text="Регистратсияи ронанда", callback_data="how_driver_list")],
+        [InlineKeyboardButton(text="Чи тавр фармоиш додани таксӣ", callback_data="how_order_taxi")],
+        [InlineKeyboardButton(text="чи тавр регистратсияи ронанда", callback_data="how_driver_list")],
         [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
@@ -41,7 +41,7 @@ async def show_help(call: CallbackQuery):
 @start_router.callback_query(lambda c: c.data == "how_order_taxi")
 async def order_taxi_info(callback_query: CallbackQuery):
     text = (
-        "Чӣ тавр фармоиши таксӣ додан:\n\n"
+        "Чӣ тавр фармоиш додани таксӣ:\n\n"
         "1. Тугмаи 'Фармоиши таксӣ'-ро пахш намоед.\n\n"
         "2. Бот аз шумо мепурсад, ки аз кадом шаҳр сафаро оғоз мекунед. Шаҳре, ки аз онҷо сафаро оғоз мекунед, бо истифодаи тугмаро интихоб кунед.\n\n"
         "3. Бот аз шумо мепурсад, ки ба кадом шаҳр сафар мекунед. Шаҳре, ки ба он сафар мекунед, бо истифодаи тугмаро интихоб кунед.\n\n"
@@ -52,13 +52,7 @@ async def order_taxi_info(callback_query: CallbackQuery):
     )
     await callback_query.message.edit_text(text)
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Регистратсия ронанда", callback_data="how_driver_list")],
-        [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
-        [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
-    ])
-    await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    
 
 @start_router.callback_query(lambda c: c.data == "how_driver_list")
 async def driver_list_info(callback_query: CallbackQuery):
@@ -71,13 +65,7 @@ async def driver_list_info(callback_query: CallbackQuery):
     )
     await callback_query.message.edit_text(text)
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
-        [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
-        [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
-    ])
-    await callback_query.message.reply("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    
 
 
 
@@ -94,13 +82,7 @@ async def create_post_info(callback_query: CallbackQuery):
     )
     await callback_query.message.edit_text(text)
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
-        [InlineKeyboardButton(text="Регистратсияиронанда", callback_data="how_driver_list")],
-        [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
-        [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
-    ])
-    await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    
 
 
 @start_router.callback_query(lambda c: c.data == "how_des_menu")
@@ -119,10 +101,4 @@ async def create_post_info(callback_query: CallbackQuery):
     )
     await callback_query.message.edit_text(text)
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Фармоиши таксӣ", callback_data="how_order_taxi")],
-        [InlineKeyboardButton(text="Регистратсияи ронанда", callback_data="how_driver_list")],
-        [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
-        [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
-    ])
-    await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    
