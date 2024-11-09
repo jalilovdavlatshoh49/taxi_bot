@@ -53,23 +53,21 @@ async def order_taxi_info(callback_query: CallbackQuery):
     await callback_query.message.edit_text(text)
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Регистратсияиронанда", callback_data="how_driver_list")],
+        [InlineKeyboardButton(text="Регистратсия ронанда", callback_data="how_driver_list")],
         [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
     await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
-@start_router.callback_query(lambda c: c.data == "how_driver_list")
+@start_router.callback_query_handler(lambda c: c.data == "how_driver_list")
 async def driver_list_info(callback_query: CallbackQuery):
     text = (
         "Чӣ тавр регистратсия барои ронанда кардан:\n\n"
-                   "1. Барои сабти ном, бот аввал аз Шумо номатонро мепурсад — номатонро ворид намоед.\n\n"
-                   "2. Баъд бот рақами телефонатонро мепурсад — рақами худро ворид кунед.\n\n"
-                   "3. Бот сурати мошинро талаб мекунад — акси мошинатонро ирсол кунед.\n\n"
-                   "Бо анҷом додани ин қадамҳо, Шумо сабти ном шудед ва метавонед барои сафар пост эҷод кунед.\n\n",
-    
-    
+        "1. Барои сабти ном, бот аввал аз Шумо номатонро мепурсад — номатонро ворид намоед.\n\n"
+        "2. Баъд бот рақами телефонатонро мепурсад — рақами худро ворид кунед.\n\n"
+        "3. Бот сурати мошинро талаб мекунад — акси мошинатонро ирсол кунед.\n\n"
+        "Бо анҷом додани ин қадамҳо, Шумо сабти ном шудед ва метавонед барои сафар пост эҷод кунед.\n\n"
     )
     await callback_query.message.edit_text(text)
 
@@ -79,7 +77,7 @@ async def driver_list_info(callback_query: CallbackQuery):
         [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    await callback_query.message.reply("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
 
 
