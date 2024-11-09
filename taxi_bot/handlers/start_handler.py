@@ -70,7 +70,6 @@ async def driver_list_info(callback_query: CallbackQuery):
                    "Бо анҷом додани ин қадамҳо, Шумо сабти ном шудед ва метавонед барои сафар пост эҷод кунед.\n\n",
     
     
-}
     )
     await callback_query.message.edit_text(text)
 
