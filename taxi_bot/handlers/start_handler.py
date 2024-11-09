@@ -50,7 +50,7 @@ async def order_taxi_info(callback_query: CallbackQuery):
         "Пас аз интихоби ронанда, ба ӯ хабар фиристода мешавад. Интизор шавед, то ронанда қабул ё рад кардани фармоиши Шуморо ба Шумо хабар диҳад.\n\n"
         "Эзоҳ: Дар меню функсияҳои иловагӣ барои истифодаи бот мавҷуданд, ки бо онҳо Шумо метавонед аз имкониятҳои пурраи бот баҳра баред."
     )
-    await callback_query.message.edit_text(text)
+    await callback_query.message.answer(text)
 
     
 
@@ -63,7 +63,7 @@ async def driver_list_info(callback_query: CallbackQuery):
         "3. Бот сурати мошинро талаб мекунад — акси мошинатонро ирсол кунед.\n\n"
         "Бо анҷом додани ин қадамҳо, Шумо сабти ном шудед ва метавонед барои сафар пост эҷод кунед.\n\n"
     )
-    await callback_query.message.edit_text(text)
+    await callback_query.message.answer(text)
 
     
 
@@ -80,7 +80,7 @@ async def create_post_info(callback_query: CallbackQuery):
                    "5. Сипас бот шумораи клиентҳоро, ки барои сафар мехоҳед, мепурсад — шумораро ворид кунед.\n\n"
                    "6. Дар охир, бот аз Шумо хоҳиши навиштани коментарияро мепурсад. Агар коментария надошта бошед, 'не' нависед. Дар бораи сафар коментария нависед."
     )
-    await callback_query.message.edit_text(text)
+    await callback_query.message.answer(text)
 
     
 
@@ -99,6 +99,6 @@ async def create_post_info(callback_query: CallbackQuery):
         "- **Акаунт ҳамчун ронанда** – Дар ин қисмат, ронанда метавонад маълумоти шахсии худро бубинад ва дар ҳолати зарурӣ онро тағйир диҳад.\n\n"
         "- **Бақайдгирии сафари нав** – Бо пахши он, ронанда метавонад барои сафари нав пост эҷод кунад, ки муштариён онро дар рӯйхати таксиҳо бинанд."
     )
-    await callback_query.message.edit_text(text)
+    await callback_query.message.answer(text)
 
     
