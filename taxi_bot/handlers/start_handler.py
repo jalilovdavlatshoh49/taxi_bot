@@ -38,7 +38,7 @@ async def show_help(call: CallbackQuery):
     await call.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
 # Ҳар як функсия барои нишон додани иттилооти дахлдор
-@start_router.callback_query_handler(lambda c: c.data == "how_order_taxi")
+@start_router.callback_query(lambda c: c.data == "how_order_taxi")
 async def order_taxi_info(callback_query: CallbackQuery):
     text = (
         "Чӣ тавр фармоиши таксӣ додан:\n\n"
@@ -102,7 +102,8 @@ async def create_post_info(callback_query: CallbackQuery):
         [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    await callback_query
+message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
 
 @start_router.callback_query(lambda c: c.data == "how_des_menu")
@@ -127,4 +128,4 @@ async def create_post_info(callback_query: CallbackQuery):
         [InlineKeyboardButton(text="Чи тавр пост навистан", callback_data="how_create_post")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
