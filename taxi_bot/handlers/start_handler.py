@@ -102,8 +102,7 @@ async def create_post_info(callback_query: CallbackQuery):
         [InlineKeyboardButton(text="Шарҳи тугмаҳои бот", callback_data="how_des_menu")],
         [InlineKeyboardButton(text="Меню", callback_data="inline_menu")]
     ])
-    await callback_query
-message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
+    await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
 
 @start_router.callback_query(lambda c: c.data == "how_des_menu")
