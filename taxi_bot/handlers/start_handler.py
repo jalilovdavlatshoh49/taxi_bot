@@ -60,7 +60,7 @@ async def order_taxi_info(callback_query: CallbackQuery):
     ])
     await callback_query.message.answer("Тарзи истифода бурдани бот.", reply_markup=keyboard)
 
-@start_router.callback_query_handler(lambda c: c.data == "how_driver_list")
+@start_router.callback_query(lambda c: c.data == "how_driver_list")
 async def driver_list_info(callback_query: CallbackQuery):
     text = (
         "Чӣ тавр регистратсия барои ронанда кардан:\n\n"
