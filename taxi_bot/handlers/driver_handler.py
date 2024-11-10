@@ -11,7 +11,7 @@ from sqlalchemy import desc, select, delete, update
 
 start_router = Router()
 
-# Коркарди пахши тугмаи "Ронанда"
+# Коркарди пахши тугмаи "Ронанда" 🚗
 @start_router.callback_query(lambda call: call.data.startswith("startdriver"))
 async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
     user_id_data = call.data.split(":")
@@ -19,7 +19,7 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
     result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = result.scalars().first()
-    
+
     await session.close()
     if driver:
         img_from_db = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
@@ -28,69 +28,69 @@ async def handle_driver_choice(call: types.CallbackQuery, state: FSMContext):
         if car_images_from_db:
             confirmation_text = (
                 f"Аккаунти шумо:\n\n"
-                f"Ном: {driver.name}\n"
-                f"Рақами телефон: {driver.phone_number}\n\n"   
-                f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n"
+                f"Ном: {driver.name} 🧑‍💼\n"
+                f"Рақами телефон: {driver.phone_number} 📞\n\n"   
+                f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating} ⭐\n"
                 )
 
-                                    
+
             media=[]    
             for car_image in car_images_from_db:
-                
+
                 car_img = car_image.file_id
                 media.append(InputMediaPhoto(media=car_img))
             await call.message.answer_media_group(media)
             media.clear()
-                    
-                            
-            # Тугма барои тасдиқ ё ивази маълумотҳо
+
+
+            # Тугма барои тасдиқ ё ивази маълумотҳо ✍️
             markup = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_driver_account")]
+                [InlineKeyboardButton(text="Ивази аккаунт 🔄", callback_data="edit_driver_account")]
                 ])
-                                            
+
 
             await call.message.answer(text=confirmation_text, reply_markup=markup)
 
 
-            # Намоиши матни тасдиқ ва иловаи маълумот дар бораи сафар бо тугмаи бақайдгирӣ
+            # Намоиши матни тасдиқ ва иловаи маълумот дар бораи сафар бо тугмаи бақайдгирӣ 🛣️
             trip_text = (
-                "Лутфан дар бораи сафар пост нависед."
+                "Лутфан дар бораи сафар пост нависед. 📝"
                 )
 
-            # Тугмаи "Ба қайд гирифтани сафар"
+            # Тугмаи "Ба қайд гирифтани сафар" 🚖
             trip_markup = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Ба қайд гирифтани сафар", callback_data="register_trip")]
+                [InlineKeyboardButton(text="Ба қайд гирифтани сафар 🛣️", callback_data="register_trip")]
                 ])
 
             # Намоиши матн ва тугмаҳо ба якҷоя
             await call.message.answer(trip_text, reply_markup=trip_markup)
-                
+
         else:    
             await session.delete(driver)
             await session.commit()
-                                        
-            await call.message.answer("Номатонро нависед:")
+
+            await call.message.answer("Номатонро нависед: ✏️")
             await state.set_state(RegisterDriverFSM.waiting_for_name)
-                                    
-    
+
+
     else:
-        await call.message.answer("Номатонро нависед:")
+        await call.message.answer("Номатонро нависед: ✏️")
         await state.set_state(RegisterDriverFSM.waiting_for_name)
 
 
-# 2. Қабули номи ронанда
+# 2. Қабули номи ронанда 📝
 @start_router.message(RegisterDriverFSM.waiting_for_name)
 async def get_driver_name(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_driver_name=message.text)
-    await message.answer("Лутфан рақами телефонро ворид кунед:")
+    await message.answer("Лутфан рақами телефонро ворид кунед: 📞")
     await state.set_state(RegisterDriverFSM.waiting_for_phone)
 
 
-# 3. Қабули рақами телефон
+# 3. Қабули рақами телефон 📱
 @start_router.message(RegisterDriverFSM.waiting_for_phone)
 async def get_driver_phone(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_driver_phone=message.text)
-    
+
     user_id = message.from_user.id    
     session = AsyncSessionLocal()
     driver_data = await state.get_data()
@@ -98,19 +98,19 @@ async def get_driver_phone(message: types.Message, state: FSMContext):
     phone_number=driver_data['waiting_for_driver_phone']
 
     await state.clear()
-    # Сабти маълумот ба пойгоҳи додаҳо
+    # Сабти маълумот ба пойгоҳи додаҳо 💾
     async with session.begin():
         new_driver = Driver(name=name, phone_number=phone_number, user_id=user_id)
 
         session.add(new_driver)
         await session.commit()
-        
+
     driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = driver_result.scalars().first()
     await session.close()
-        
+
     if driver:
-        await message.answer("Суратҳои мошинатонро ирсол намоед:")
+        await message.answer("Суратҳои мошинатонро ирсол намоед: 🚗📸")
         await state.set_state(CarImageFSM.waiting_for_car_image)
         
 
