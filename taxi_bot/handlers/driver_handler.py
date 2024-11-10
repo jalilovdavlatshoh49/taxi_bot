@@ -317,17 +317,17 @@ async def process_from_city_callback(call: types.CallbackQuery, state: FSMContex
 @start_router.callback_query(lambda call: call.data.startswith("to_city"))
 async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
-    
+
     if "page" in data:
         page = int(data[-1])
         keyboard = generate_pagination_keyboard(page, callback_prefix="to_city")
-        await call.message.edit_text("Ба кадом шаҳр сафар мекунед?", reply_markup=keyboard)
+        await call.message.edit_text("Ба кадом шаҳр сафар мекунед? 🌍", reply_markup=keyboard)
     else:
         city = data[-1]
         await state.update_data(to_city=city)
-        await call.message.edit_text(f"Шумо ба шаҳри {city} сафар мекунед.")
-        
-        await call.message.answer("Нархи сафарро ворид кунед:")
+        await call.message.edit_text(f"Шумо ба шаҳри {city} сафар мекунед. 🚗")
+
+        await call.message.answer("Нархи сафарро ворид кунед: 💸")
         await state.set_state(DriverTripFSM.price)
 
 
@@ -337,10 +337,10 @@ async def process_price(message: Message, state: FSMContext):
     try:
         price = float(message.text)
         await state.update_data(price=price)
-        await message.answer("Чанд нафар клиент барои сафар лозим аст:")
+        await message.answer("Чанд нафар клиент барои сафар лозим аст? 👥")
         await state.set_state(DriverTripFSM.max_clients)
     except ValueError:
-        await message.answer("Лутфан нархи дуруст ворид кунед (фақат рақамҳо).")
+        await message.answer("Лутфан нархи дуруст ворид кунед (фақат рақамҳо). 🧮")
 
 # Гирифтани шумораи мизоҷон
 @start_router.message(DriverTripFSM.max_clients)
@@ -348,10 +348,10 @@ async def process_max_clients(message: Message, state: FSMContext):
     try:
         max_clients = int(message.text)
         await state.update_data(max_clients=max_clients)
-        await message.answer("Комментарияи иловагиро ворид кунед ё 'Не' нависед агар надоред:")
+        await message.answer("Комментарияи иловагиро ворид кунед ё 'Не' нависед агар надоред: 📝")
         await state.set_state(DriverTripFSM.comment)
     except ValueError:
-        await message.answer("Лутфан як рақами дуруст ворид кунед.")
+        await message.answer("Лутфан як рақами дуруст ворид кунед. 🔢")
 
 # Гирифтани комментари
 @start_router.message(DriverTripFSM.comment)
@@ -380,27 +380,27 @@ async def process_comment(message: Message, state: FSMContext):
         session.add(new_trip)
         await session.commit()
         await session.close()
-    await message.answer("Сафари шумо бомуваффақият ба қайд гирифта шуд!")
+    await message.answer("Сафари шумо бомуваффақият ба қайд гирифта шуд! ✅")
     await state.clear()
-    
+
 
     driver_trips_result = await session.execute(select(DriverPost).where(DriverPost.driver_id == driver_id).order_by(DriverPost.is_online, DriverPost.current_clients))
     driver_trips = driver_trips_result.scalars().all()
     await session.close()
     if driver_trips:
-        
+
 
         for driver_trip in driver_trips:
             driver_info = (
-                f"Маълумот дар бораи сафар:\n\n"
-            f"Аз шаҳри: {driver_trip.from_city}\n"
-            f"Ба шаҳри: {driver_trip.to_city}\n\n"
-            f"Нарх: {driver_trip.price}\n"
-            f"Шумораи клиенти кабулкардашуда: {driver_trip.current_clients}\n\n"
-            f"Шумораи клиенти лозима: {driver_trip.max_clients}\n\n"
-            f"Комментария:\n {driver_trip.comment if driver_trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
-            f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
-            f"Ин пост: {'ОНЛАЙН аст.' if driver_trip.is_online else 'ОФЛАЙН аст'}"
+                f"Маълумот дар бораи сафар: 📅\n\n"
+            f"Аз шаҳри: {driver_trip.from_city} 🏙️\n"
+            f"Ба шаҳри: {driver_trip.to_city} 🌆\n\n"
+            f"Нарх: {driver_trip.price} 💰\n"
+            f"Шумораи клиенти кабулкардашуда: {driver_trip.current_clients} 👥\n\n"
+            f"Шумораи клиенти лозима: {driver_trip.max_clients} 👥\n\n"
+            f"Комментария: {driver_trip.comment if driver_trip.comment else 'ронанда коментария нагузоштааст'} 🗨️\n\n"
+            f"Пости ОФЛАЙН-ро клиент дида наметавонад. ❌\n\n"
+            f"Ин пост: {'ОНЛАЙН аст.' if driver_trip.is_online else 'ОФЛАЙН аст'} 🟢"
                 )
 
             # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
@@ -413,15 +413,15 @@ async def process_comment(message: Message, state: FSMContext):
 
 
             await message.answer(driver_info, reply_markup=keyboard)
-        
-    else:
-        await message.answer("Шумо ҳанӯз маълумотҳои худро ворид накардаед.")
 
-    
+    else:
+        await message.answer("Шумо ҳанӯз маълумотҳои худро ворид накардаед. ❗")
+
+
     new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Сафари нав ба қайд гирифтан", callback_data="new_trip")],
     ])        
-    await message.answer("Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
+    await message.answer("Пост барои сафари нав нависед ✍️", reply_markup=new_trip_keyboard)
 
 
     
@@ -456,20 +456,20 @@ async def set_trip_online(call: CallbackQuery):
             f"Маълумот дар бораи сафар:\n\n"
         f"Аз шаҳри: {trip.from_city}\n"
         f"Ба шаҳри: {trip.to_city}\n\n"
-        f"Нарх: {trip.price}\n\n"
-        f"Шумораи клиенти кабулкардашуда: {trip.current_clients}\n\n"
-        f"Шумораи клиенти лозима: {trip.max_clients}\n"
-        f"Комментария:\n {trip.comment if trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
+        f"Нарх: {trip.price} 💰\n\n"
+        f"Шумораи клиенти кабулкардашуда: {trip.current_clients} 🧑‍🤝‍🧑\n\n"
+        f"Шумораи клиенти лозима: {trip.max_clients} 🧑‍🤝‍🧑\n"
+        f"Комментария:\n {trip.comment if trip.comment else 'ронанда коментария нагузоштааст'} 📝\n\n"
         f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
         f"Ин пост: {'ОНЛАЙН аст.' if trip.is_online else 'ОФЛАЙН аст'}"
         )
 
     # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{trip.id}")],
-    [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{trip.id}")],
-    [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{trip.id}")],
-    [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{trip.id}")]
+    [InlineKeyboardButton(text="Онлайн 🌐", callback_data=f"set_online:{trip.id}")],
+    [InlineKeyboardButton(text="Офлайн 🚫", callback_data=f"set_offline:{trip.id}")],
+    [InlineKeyboardButton(text="Удалить кардан ❌", callback_data=f"delete_trip:{trip.id}")],
+    [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")]
     ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)
@@ -479,8 +479,8 @@ async def set_trip_online(call: CallbackQuery):
 async def set_trip_offline(call: CallbackQuery):
     trip_id = int(call.data.split(":")[1])
     yes_or_no_set_offline = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Ҳан", callback_data=f"yesset_offline:{trip_id}")],
-        [InlineKeyboardButton(text="Не", callback_data=f"noset_offline:{trip_id}")]
+        [InlineKeyboardButton(text="Ҳан ✅", callback_data=f"yesset_offline:{trip_id}")],
+        [InlineKeyboardButton(text="Не ❌", callback_data=f"noset_offline:{trip_id}")]
     ])
     await call.message.answer("Пости ОФЛАЙНРО клиент дида наметавонад.\n\n Агар клиент қабул карда бошед, ба клиентҳо хабари радъ кардани сафар мефистем.\n\n Мехоҳед ОФЛАЙН кунед?", reply_markup=yes_or_no_set_offline)
 
@@ -496,20 +496,20 @@ async def no_set_offline(call: CallbackQuery):
             f"Маълумот дар бораи сафар:\n\n"
         f"Аз шаҳри: {trip.from_city}\n"
         f"Ба шаҳри: {trip.to_city}\n\n"
-        f"Нарх: {trip.price}\n\n"
-        f"Шумораи клиенти кабулкардашуда: {trip.current_clients}\n\n"
-        f"Шумораи клиенти лозима: {trip.max_clients}\n"
-        f"Комментария:\n {trip.comment if trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
+        f"Нарх: {trip.price} 💰\n\n"
+        f"Шумораи клиенти кабулкардашуда: {trip.current_clients} 🧑‍🤝‍🧑\n\n"
+        f"Шумораи клиенти лозима: {trip.max_clients} 🧑‍🤝‍🧑\n"
+        f"Комментария:\n {trip.comment if trip.comment else 'ронанда коментария нагузоштааст'} 📝\n\n"
         f"Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
         f"Ин пост: {'ОНЛАЙН аст.' if trip.is_online else 'ОФЛАЙН аст'}"
         )
 
         # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{trip.id}")],
-        [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{trip.id}")],
-        [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{trip.id}")],
-        [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{trip.id}")]
+        [InlineKeyboardButton(text="Онлайн 🌐", callback_data=f"set_online:{trip.id}")],
+        [InlineKeyboardButton(text="Офлайн 🚫", callback_data=f"set_offline:{trip.id}")],
+        [InlineKeyboardButton(text="Удалить кардан ❌", callback_data=f"delete_trip:{trip.id}")],
+        [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")]
         ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)    
