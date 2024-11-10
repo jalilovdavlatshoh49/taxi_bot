@@ -122,32 +122,30 @@ async def get_car_image(message: types.Message, state: FSMContext):
         car_image = message.photo[-1].file_id
 
         car_img_data = await state.get_data()
-        
-        car_images=car_img_data.get('photos', [])
+
+        car_images = car_img_data.get('photos', [])
         car_images.append(car_image)
         await state.update_data(photos=car_images)
-        
 
-        done_car_image_keyboard=InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Тамом", callback_data="done_car_image")]
+        done_car_image_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="Тамом ✅", callback_data="done_car_image")]
         ])
-        await message.answer("Сурат қабул шуд. Шумо метавонед суратҳои бештар ирсол кунед ё тугмаи 'тамом'-ро пахш намоед.", reply_markup=done_car_image_keyboard)
+        await message.answer("Сурат қабул шуд 📸. Шумо метавонед суратҳои бештар ирсол кунед ё тугмаи 'тамом'-ро пахш намоед.", reply_markup=done_car_image_keyboard)
         await state.set_state(CarImageFSM.waiting_for_car_image)
     else:
-        await message.answer("Лутфан сурати мошин ирсол намоед:")
+        await message.answer("Лутфан сурати мошин ирсол намоед 📷:")
         await state.set_state(CarImageFSM.waiting_for_car_image)
 
 
 @start_router.callback_query(lambda call: call.data == "done_car_image")
 async def finish_image_upload(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
-    
-    user_id = call.from_user.id
-    
-    car_img_data=await state.get_data()
-    car_images=car_img_data.get('photos', [])
 
-    
+    user_id = call.from_user.id
+
+    car_img_data = await state.get_data()
+    car_images = car_img_data.get('photos', [])
+
     async with session.begin():
         for car_img in car_images:
             new_car_image = CarImage(file_id=car_img, driver_user_id=user_id)
@@ -159,39 +157,38 @@ async def finish_image_upload(call: types.CallbackQuery, state: FSMContext):
     driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
     driver = driver_result.scalars().first()
     await session.close()
-    await call.message.answer("Аккаунти шумо муваффақона сабт шуд!")
+    await call.message.answer("Аккаунти шумо муваффақона сабт шуд! ✅")
     confirmation_text = (
         f"Аккаунти шумо:\n\n"
-        f"Ном: {driver.name}\n"
-        f"Рақами телефон: {driver.phone_number}\n"   
-        f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n"
-        )
-
+        f"Ном: {driver.name} 🙋\n"
+        f"Рақами телефон: {driver.phone_number} 📱\n"
+        f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating} ⭐\n"
+    )
 
     car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == user_id))
-    car_images_from_db=car_images_from_db_result.scalars().all()
-    media=[]    
+    car_images_from_db = car_images_from_db_result.scalars().all()
+    media = []    
     for car_image in car_images_from_db:
-        car_img=car_image.file_id
+        car_img = car_image.file_id
         media.append(InputMediaPhoto(media=car_img))
     await call.message.answer_media_group(media)
     media.clear()
     await session.close()
     # Тугма барои тасдиқ ё ивази маълумотҳо
     markup = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_driver_account")]
+        [InlineKeyboardButton(text="Ивази аккаунт ✏️", callback_data="edit_driver_account")]
     ])
-        
+
     await call.message.answer(text=confirmation_text, reply_markup=markup)
-        
+
     # Намоиши матни тасдиқ ва иловаи маълумот дар бораи сафар бо тугмаи бақайдгирӣ
     trip_text = (
-        "Лутфан дар бораи сафар пост нависед."
-        )
+        "Лутфан дар бораи сафар пост нависед 📝."
+    )
 
     # Тугмаи "Ба қайд гирифтани сафар"
     trip_markup = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Ба қайд гирифтани сафар", callback_data="register_trip")]
+        [InlineKeyboardButton(text="Ба қайд гирифтани сафар 🚗", callback_data="register_trip")]
     ])
 
     # Намоиши матн ва тугмаҳо ба якҷоя
@@ -201,12 +198,11 @@ async def finish_image_upload(call: types.CallbackQuery, state: FSMContext):
 # 6. Ивази маълумотҳо
 @start_router.callback_query(lambda call: call.data == "edit_driver_account")
 async def edit_driver_info(call: types.CallbackQuery):
-    
     # Сохтани инлайн-клавиатура барои интихоб кардани майдон
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Ном", callback_data="driveredit_name")],
-        [InlineKeyboardButton(text="Рақами телефон", callback_data="driveredit_phone")],
-        [InlineKeyboardButton(text="Сурати мошин", callback_data="driveredit_carphoto")]
+        [InlineKeyboardButton(text="Ном 📝", callback_data="driveredit_name")],
+        [InlineKeyboardButton(text="Рақами телефон 📞", callback_data="driveredit_phone")],
+        [InlineKeyboardButton(text="Сурати мошин 🚗", callback_data="driveredit_carphoto")]
     ])
 
     await call.message.answer(text="Чиро тағйир додан мехоҳед?", reply_markup=keyboard)
