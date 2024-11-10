@@ -15,14 +15,14 @@ start_router = Router()
 @start_router.message(Command("menu"))
 async def menu(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Истифодабарии бот", callback_data="usage_guide")],
+        [InlineKeyboardButton(text="Чи тавр истифода бурдани бот", callback_data="usage_guide")],
         [InlineKeyboardButton(text="Обуна шудан ба група", url="https://t.me/ronanda_bot")],
         [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")],
         [InlineKeyboardButton(text="Клиентҳои ман", callback_data="inline_my_clients")],
         [InlineKeyboardButton(text="Ронандаи ман", callback_data="inline_my_driver")],
         [InlineKeyboardButton(text="Постҳои ман", callback_data="inline_my_posts")],
-        [InlineKeyboardButton(text="Аккаунт ҳамчун клиент", callback_data="inline_client_account")],
-        [InlineKeyboardButton(text="Аккаунт ҳамчун ронанда", callback_data="inline_driver_account")],
+        [InlineKeyboardButton(text="Маълумоти шахсӣ ҳамчун муштарӣ", callback_data="inline_client_account")],
+        [InlineKeyboardButton(text="Маълумоти шахсӣ ҳамчун ронанда", callback_data="inline_driver_account")],
         [InlineKeyboardButton(text="Бақайдгирии сафари нав", callback_data="inline_new_trip")]
     ])
 
@@ -39,8 +39,8 @@ async def inline_menu(callback_query: types.CallbackQuery):
         [InlineKeyboardButton(text="Клиентҳои ман", callback_data="inline_my_clients")],
         [InlineKeyboardButton(text="Ронандаи ман", callback_data="inline_my_driver")],
         [InlineKeyboardButton(text="Постҳои ман", callback_data="inline_my_posts")],
-        [InlineKeyboardButton(text="Аккаунт ҳамчун клиент", callback_data="inline_client_account")],
-        [InlineKeyboardButton(text="Аккаунт ҳамчун ронанда", callback_data="inline_driver_account")],
+        [InlineKeyboardButton(text="Маълумотҳои шахсӣ ҳамчун муштарӣ ", callback_data="inline_client_account")],
+        [InlineKeyboardButton(text="Маълумотҳои шахсӣ ҳамчун ронанда", callback_data="inline_driver_account")],
         [InlineKeyboardButton(text="Бақайдгирии сафари нав", callback_data="inline_new_trip")]
     ])
 
