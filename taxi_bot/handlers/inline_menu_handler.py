@@ -160,10 +160,10 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
             new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="➕ Сафари нав ба қайд гирифтан", callback_data="new_trip")],
         ])        
-        await call.message.answer("📝 Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
+            await call.message.answer("📝 Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
 
         else:
-        await call.message.answer('🚫 Шумо холо аккаунт надоред.\n Барои кушодани аккаунт лутфан номатонро нависед.' )
+            await call.message.answer('🚫 Шумо холо аккаунт надоред.\n Барои кушодани аккаунт лутфан номатонро нависед.' )
             await state.set_state(RegisterDriverFSM.waiting_for_name)
 
     elif data == "inline_driver_account":
