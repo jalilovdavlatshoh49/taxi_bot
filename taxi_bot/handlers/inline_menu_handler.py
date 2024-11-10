@@ -122,18 +122,18 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
             await call.message.answer("Ҳануз барои заказ кардани таксӣ аккаунт надоред. 🚫\n\n Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
 
     elif data == "inline_my_posts":
-    session = AsyncSessionLocal()
-    driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
-    driver = driver_result.scalars().first()
-    await session.close()
-    if driver:
-        driver_trips_result = await session.execute(select(DriverPost).where(DriverPost.driver_id == driver.id).order_by(DriverPost.is_online))
-        driver_trips = driver_trips_result.scalars().all()
+        session = AsyncSessionLocal()
+        driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
+        driver = driver_result.scalars().first()
         await session.close()
-        if driver_trips:
-            for driver_trip in driver_trips:
-                driver_info = (
-                    f"🚗 Маълумот дар бораи сафар:\n\n"
+        if driver:
+            driver_trips_result = await session.execute(select(DriverPost).where(DriverPost.driver_id == driver.id).order_by(DriverPost.is_online))
+            driver_trips = driver_trips_result.scalars().all()
+            await session.close()
+            if driver_trips:
+                for driver_trip in driver_trips:
+                    driver_info = (
+                        f"🚗 Маълумот дар бораи сафар:\n\n"
                     f"🌆 Аз шаҳри: {driver_trip.from_city}\n\n"
                     f"🏙 Ба шаҳри: {driver_trip.to_city}\n\n"
                     f"💰 Нарх: {driver_trip.price}\n\n"
@@ -145,94 +145,94 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
                 )
 
                 # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
-                keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                    keyboard = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="🟢 Онлайн", callback_data=f"set_online:{driver_trip.id}")],
                 [InlineKeyboardButton(text="🔴 Офлайн", callback_data=f"set_offline:{driver_trip.id}")],
                 [InlineKeyboardButton(text="❌ Удалить кардан", callback_data=f"delete_trip:{driver_trip.id}")],
                 [InlineKeyboardButton(text="🚀 Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")]
                 ])
 
-                await call.message.answer(driver_info, reply_markup=keyboard)
+                    await call.message.answer(driver_info, reply_markup=keyboard)
 
-        else:
-            await call.message.answer("🚫 Шумо ҳанӯз маълумотҳои худро ворид накардаед.")
+            else:
+                await call.message.answer("🚫 Шумо ҳанӯз маълумотҳои худро ворид накардаед.")
 
-        new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="➕ Сафари нав ба қайд гирифтан", callback_data="new_trip")],
         ])        
         await call.message.answer("📝 Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
 
-    else:
+        else:
         await call.message.answer('🚫 Шумо холо аккаунт надоред.\n Барои кушодани аккаунт лутфан номатонро нависед.' )
-        await state.set_state(RegisterDriverFSM.waiting_for_name)
+            await state.set_state(RegisterDriverFSM.waiting_for_name)
 
-elif data == "inline_driver_account":
-    session = AsyncSessionLocal()
-    driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
-    driver = driver_result.scalars().first()
-    await session.close()
-    if driver:
-        confirmation_text = (
-            f"👤 Аккаунти шумо:\n\n"
+    elif data == "inline_driver_account":
+        session = AsyncSessionLocal()
+        driver_result = await session.execute(select(Driver).where(Driver.user_id == user_id))
+        driver = driver_result.scalars().first()
+        await session.close()
+        if driver:
+            confirmation_text = (
+                f"👤 Аккаунти шумо:\n\n"
             f"📛 Ном: {driver.name}\n"
             f"📱 Рақами телефон: {driver.phone_number}\n"
             f"⭐ Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n"
         )
 
 
-        car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
-        car_images_from_db = car_images_from_db_result.scalars().all()
-        await session.close()
-        if car_images_from_db:
-            media=[]    
-            for car_image in car_images_from_db:
-                car_img=car_image.file_id
+            car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
+            car_images_from_db = car_images_from_db_result.scalars().all()
+            await session.close()
+            if car_images_from_db:
+                media=[]    
+                for car_image in car_images_from_db:
+                    car_img=car_image.file_id
                 media.append(InputMediaPhoto(media=car_img))
-            await call.message.answer_media_group(media)
-            media.clear()
+                await call.message.answer_media_group(media)
+                media.clear()
 
             # Тугма барои тасдиқ ё ивази маълумотҳо
-            markup = InlineKeyboardMarkup(inline_keyboard=[
+                markup = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="✏️ Ивази аккаунт", callback_data="edit_driver_account")]
             ])
 
 
-            await call.message.answer(text=confirmation_text, reply_markup=markup)
+                await call.message.answer(text=confirmation_text, reply_markup=markup)
+
+            else:
+                await session.delete(driver)
+                await session.commit()
+                await session.close()                            
+                await call.message.answer('🚫 Шумо холо аккаунт надоред.\n Барои кушодани аккаунт лутфан номатонро нависед.' )
+                await state.set_state(RegisterDriverFSM.waiting_for_name)
+
+
 
         else:
-            await session.delete(driver)
-            await session.commit()
-            await session.close()                            
             await call.message.answer('🚫 Шумо холо аккаунт надоред.\n Барои кушодани аккаунт лутфан номатонро нависед.' )
             await state.set_state(RegisterDriverFSM.waiting_for_name)
 
-
-
-    else:
-        await call.message.answer('🚫 Шумо холо аккаунт надоред.\n Барои кушодани аккаунт лутфан номатонро нависед.' )
-        await state.set_state(RegisterDriverFSM.waiting_for_name)
-
-elif data == "inline_new_trip":
-    new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="➕ Сафари нав ба қайд гирифтан", callback_data="new_trip")],
+    elif data == "inline_new_trip":
+        new_trip_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="➕ Сафари нав ба қайд гирифтан", callback_data="new_trip")],
         ])        
-    await call.message.answer("📝 Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
+        await call.message.answer("📝 Пост барои сафари нав нависед", reply_markup=new_trip_keyboard)
 
-elif data == "inline_my_driver":
-    session = AsyncSessionLocal()
+    elif data == "inline_my_driver":
+        session = AsyncSessionLocal()
 
-    clientposts_result = await session.execute(select(ClientPost).where(ClientPost.client_user_id == user_id))
-    clientposts = clientposts_result.scalars().all()
-    await session.close()
-    if clientposts:
-        for clientpost in clientposts:
-            driverpost_result = await session.execute(select(DriverPost).where(DriverPost.id == clientpost.selected_post_id))
-            driverpost = driverpost_result.scalars().first()
-            driver_result = await session.execute(select(Driver).where(Driver.id == driverpost.driver_id))
-            driver = driver_result.scalars().first()
-            await session.close()
-            driver_info = (
-                    f"🚗 Маълумот дар бораи сафар:\n\n"
+        clientposts_result = await session.execute(select(ClientPost).where(ClientPost.client_user_id == user_id))
+        clientposts = clientposts_result.scalars().all()
+        await session.close()
+        if clientposts:
+            for clientpost in clientposts:
+                driverpost_result = await session.execute(select(DriverPost).where(DriverPost.id == clientpost.selected_post_id))
+                driverpost = driverpost_result.scalars().first()
+                driver_result = await session.execute(select(Driver).where(Driver.id == driverpost.driver_id))
+                driver = driver_result.scalars().first()
+                await session.close()
+                driver_info = (
+                        f"🚗 Маълумот дар бораи сафар:\n\n"
                 f"🌆 Аз шаҳри: {driverpost.from_city}\n\n"
                 f"🏙 Ба шаҳри: {driverpost.to_city}\n\n"
                 f"💰 Нарх: {driverpost.price}\n\n"
@@ -246,24 +246,24 @@ elif data == "inline_my_driver":
 
 
             # Эҷоди тугмаҳои қабул ва рад
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                keyboard = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="❌ Рад кардан", callback_data=f"declinedriver_{driver.id}_{driverpost.id}")]
             ])
 
-            car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
-            car_images_from_db = car_images_from_db_result.scalars().all()
-            await session.close()
-            media=[]    
-            for car_image in car_images_from_db:
-                car_img=car_image.file_id
+                car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
+                car_images_from_db = car_images_from_db_result.scalars().all()
+                await session.close()
+                media=[]    
+                for car_image in car_images_from_db:
+                    car_img=car_image.file_id
                 media.append(InputMediaPhoto(media=car_img))
-            await call.message.answer_media_group(media)
-            media.clear()
+                await call.message.answer_media_group(media)
+                media.clear()
 
-            await call.message.answer(text=driver_info, reply_markup=keyboard)
+                await call.message.answer(text=driver_info, reply_markup=keyboard)
 
-    else:
-        await call.message.answer("🚫 Шумо ҳанӯз такси заказ накардаед.")
-        keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-        await call.message.answer("🌍 Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
-        await state.set_state(ClientPostFSM.waiting_for_from_city)
+        else:
+            await call.message.answer("🚫 Шумо ҳанӯз такси заказ накардаед.")
+            keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
+            await call.message.answer("🌍 Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+            await state.set_state(ClientPostFSM.waiting_for_from_city)
