@@ -215,18 +215,18 @@ async def choose_field(call: types.CallbackQuery, state: FSMContext):
     await state.update_data(field=field)
 
     if field == "name":
-        await call.message.answer("Номи навро ворид кунед:")
+        await call.message.answer("Номи навро ворид кунед: 📝")
         await state.set_state(EditDriverInfo.waiting_for_new_value)
-    
+
     elif field == "phone":
-        await call.message.answer("Рақами телефони навро ворид кунед:")
+        await call.message.answer("Рақами телефони навро ворид кунед: 📞")
         await state.set_state(EditDriverInfo.waiting_for_new_value)
-    
+
     elif field == "carphoto":
-        await call.message.answer("Сурати нави мошинро ирсол кунед:")
+        await call.message.answer("Сурати нави мошинро ирсол кунед: 🚗📷")
         await state.set_state(EditDriverInfo.waiting_for_new_value)
-    
-    
+
+
 # Қабули маълумоти нав ва навсозии база
 @start_router.message(EditDriverInfo.waiting_for_new_value)
 async def update_info(message: types.Message, state: FSMContext):
@@ -239,30 +239,30 @@ async def update_info(message: types.Message, state: FSMContext):
         # Санҷиш: ном бояд матн бошад
         name = message.text
         if not name.isalpha():  # танҳо ҳарфҳо қабул мешаванд
-            await message.answer("Лутфан номи дурустро ворид намоед.")
+            await message.answer("Лутфан номи дурустро ворид намоед. 🔠")
             return
         async with session.begin():
             await session.execute(update(Driver).where(Driver.user_id == user_id).values(name=name))
             await session.commit()
         await state.clear()
-        await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд.")
-        
+        await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд. ✅")
+
     elif field == "phone":
         # Санҷиш: рақами телефон бояд рақам бошад
         phone_number = message.text
         if not phone_number.isdigit():  # танҳо рақамҳо қабул мешаванд
-            await message.answer("Лутфан рақами телефони дурустро ворид намоед.")
+            await message.answer("Лутфан рақами телефони дурустро ворид намоед. 📱")
             return
         async with session.begin():
             await session.execute(update(Driver).where(Driver.user_id == user_id).values(phone_number=phone_number))
             await session.commit()
         await state.clear()
-        await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд.")
-        
+        await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд. ✅")
+
     elif field == "carphoto":
         # Санҷиш: бояд аксе ирсол карда шавад
         if not message.photo:  # санҷиши акси ирсолшуда
-            await message.answer("Лутфан акси дурустро ирсол намоед.")
+            await message.answer("Лутфан акси дурустро ирсол намоед. 📸")
             return
         async with session.begin():
             await session.execute(delete(CarImage).where(CarImage.driver_user_id == user_id))
@@ -275,23 +275,23 @@ async def update_info(message: types.Message, state: FSMContext):
         await state.update_data(photos=car_images)
 
         done_car_image_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Тамом", callback_data="done_car_image")]
+            [InlineKeyboardButton(text="Тамом ✅", callback_data="done_car_image")]
         ])
-        await message.answer("Сурат қабул шуд. Шумо метавонед суратҳои бештар ирсол кунед ё тугмаи 'Тамом'-ро пахш намоед.", reply_markup=done_car_image_keyboard)
+        await message.answer("Сурат қабул шуд. Шумо метавонед суратҳои бештар ирсол кунед ё тугмаи 'Тамом'-ро пахш намоед. 📷", reply_markup=done_car_image_keyboard)
         await state.set_state(CarImageFSM.waiting_for_car_image)
-        
+
     else:
-        await message.answer("Лутфан маълумоти дуруст ворид намоед ё ирсол намоед.")
-        
-    
+        await message.answer("Лутфан маълумоти дуруст ворид намоед ё ирсол намоед. ⚠️")
 
-    
 
-        
+
+
+
+
 @start_router.callback_query(lambda call: call.data == "register_trip")
 async def start_trip_registration(call: CallbackQuery, state: FSMContext):
     keyboard = generate_pagination_keyboard(page=0, callback_prefix="from_city")
-    await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+    await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед? 🌍", reply_markup=keyboard)
     await state.set_state(DriverTripFSM.from_city)
 
 
@@ -299,18 +299,18 @@ async def start_trip_registration(call: CallbackQuery, state: FSMContext):
 @start_router.callback_query(lambda call: call.data.startswith("from_city"))
 async def process_from_city_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
-    
+
     if "page" in data:
         page = int(data[-1])
         keyboard = generate_pagination_keyboard(page, callback_prefix="from_city")
-        await call.message.edit_text("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+        await call.message.edit_text("Аз кадом шаҳр сафарро оғоз мекунед? 🏙️", reply_markup=keyboard)
     else:
         city = data[-1]
         await state.update_data(from_city=city)
-        await call.message.edit_text(f"Шумо аз шаҳри {city} сафарро оғоз мекунед.")
-        
+        await call.message.edit_text(f"Шумо аз шаҳри {city} сафарро оғоз мекунед. ✈️")
+
         keyboard = generate_pagination_keyboard(page=0, callback_prefix="to_city")
-        await call.message.answer("Ба кадом шаҳр сафар мекунед?", reply_markup=keyboard)
+        await call.message.answer("Ба кадом шаҳр сафар мекунед? 🌆", reply_markup=keyboard)
         await state.set_state(DriverTripFSM.to_city)
 
 # Хандлер барои интихоби шаҳри сафар
