@@ -33,7 +33,9 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
             confirmation_text = (
                 f"Аккаунти шумо: 📝\n\n"
                 f"Ном: {client.name}\n"
-                f"Рақами телефон: {client.phone_number} 📞\n"
+                f"Рақами телефон: {client.phone_number} 📞\n\n"
+                f"Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n Ном ва рақами телефони шумо танҳо пас аз фармоиш ба ронанда фиристода мешавад, ки барои тамос дар бораи сафар лозим аст. 📲"
+
             )
 
             # Тугма барои тасдиқ ё ивази маълумотҳо 🔄
@@ -365,12 +367,13 @@ async def process_num_clients(message: types.Message, state: FSMContext):
             client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
                 [InlineKeyboardButton(text="Регистратсия 📝", callback_data="client_registration")],
             ])
-            await message.answer("Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
+            await message.answer("Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n\n Ном ва рақами телефони шумо танҳо пас аз фармоиш ба ронанда фиристода мешавад, ки барои тамос дар бораи сафар лозим аст. 📲\n\n", reply_markup=client_registration_keyboard)
 
     else:
-        keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-        await message.answer(f"Ин такси барои {num_clients} нафар чои холӣ надорад.\n\n Лутфан дигар таксиро заказ кунед.\n\n Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
-        await state.set_state(ClientPostFSM.waiting_for_from_city)
+        if message.text.isdigit():
+            keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
+            await message.answer(f"Ин такси барои {num_clients} нафар чои холӣ надорад.\n\n Лутфан дигар таксиро заказ кунед.\n\n Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+            await state.set_state(ClientPostFSM.waiting_for_from_city)
 
 
 
@@ -388,7 +391,7 @@ async def client_registration(call: CallbackQuery, state: FSMContext):
 @start_router.message(ClientRegistrationFSM.waiting_for_name)
 async def process_name(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_name=message.text)
-    await message.answer("Лутфан рақами телефони худро нависед: 📞")
+    await message.answer("Лутфан рақами телефонро нависед: 📞")
     await state.set_state(ClientRegistrationFSM.waiting_for_phone_number)
 
 # Қабули рақами телефон ва талаб кардани шумораи мизоҷон
@@ -592,7 +595,10 @@ async def account_info(message: types.Message, state: FSMContext):
         confirmation_text = (
             f"Аккаунти шумо:\n\n"
             f"Ном: {client.name} 😊\n"
-            f"Рақами телефон: {client.phone_number} 📞\n"
+            f"Рақами телефон: {client.phone_number} 📞\n\n"
+            f"Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n Ном ва рақами телефони шумо танҳо пас аз фармоиш ба ронанда фиристода мешавад, ки барои тамос дар бораи сафар лозим аст. 📲"
+
+
             )
 
         # Тугма барои тасдиқ ё ивази маълумотҳо
@@ -603,10 +609,10 @@ async def account_info(message: types.Message, state: FSMContext):
         await message.answer(confirmation_text, reply_markup=markup)
     else:
         client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Регистратсия ✍️", callback_data="client_registration")],
+                [InlineKeyboardButton(text="Ба қайд мондан", callback_data="client_registration")],
                 ])
 
-        await message.answer("Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед 📲", reply_markup=client_registration_keyboard)
+        await message.answer("Ҳануз барои фармоиши таксӣ, ном ва рақами телефонатонро ба қайд намондаед.\n\n Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n ном ва рақами телефонатон танҳо пас аз фармоиш ба ронанда фиристода мешаванд, ки барои тамос дар бораи сафар лозим аст. 📲\n\n Лутфан ном ва рақами телефонатонро ба қайд монед. 📲", reply_markup=client_registration_keyboard)
 
 
 @start_router.message(Command("order_a_taxi"))
