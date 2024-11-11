@@ -140,8 +140,8 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
                     f"👥 Шумораи клиенти кабулкардашуда: {driver_trip.current_clients}\n\n"
                     f"👥 Шумораи клиенти лозима: {driver_trip.max_clients}\n\n"
                     f"💬 Комментария:\n {driver_trip.comment if driver_trip.comment else 'ронанда коментария нагузоштааст'}\n\n"
-                    f"❌ Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
-                    f"🔴 Ин пост: {'ОНЛАЙН аст.' if driver_trip.is_online else 'ОФЛАЙН аст'}"
+                    f"📢 Пости ОФЛАЙН-ро клиент дида наметавонад.\n\n"
+                    f"Ин пост: {'🟢 ОНЛАЙН аст.' if driver_trip.is_online else '🔴 ОФЛАЙН аст'}"
                 )
 
                 # Тугмаҳо барои оғози ва анҷоми ҷустуҷӯ, сафарҳои нав ва ҳазфи сафар
@@ -149,7 +149,8 @@ async def process_callback(call: types.CallbackQuery, state: FSMContext):
                 [InlineKeyboardButton(text="🟢 Онлайн", callback_data=f"set_online:{driver_trip.id}")],
                 [InlineKeyboardButton(text="🔴 Офлайн", callback_data=f"set_offline:{driver_trip.id}")],
                 [InlineKeyboardButton(text="❌ Удалить кардан", callback_data=f"delete_trip:{driver_trip.id}")],
-                [InlineKeyboardButton(text="🚀 Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")]
+                [InlineKeyboardButton(text="🚀 Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")],
+[InlineKeyboardButton(text="Маълумот барои тугмаҳои пост", callback_data="post_info")]
                 ])
 
                     await call.message.answer(driver_info, reply_markup=keyboard)
