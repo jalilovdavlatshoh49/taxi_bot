@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from data.cities import cities
 
-cities_per_page = 14 # Шумораи шаҳрҳо дар як саҳифа (шумораи ҷуфт интихоб кунед барои ду қаторӣ)
+cities_per_page = 10 # Шумораи шаҳрҳо дар як саҳифа (шумораи ҷуфт интихоб кунед барои ду қаторӣ)
 
 def generate_pagination_keyboard(page, callback_prefix):
     keyboard = InlineKeyboardBuilder()
