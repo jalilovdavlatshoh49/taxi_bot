@@ -15,15 +15,11 @@ from math import ceil
 from states.client_states import ClientPostFSM, ClientRegistrationFSM, EditClientInfo
 from keyboards.get_driver_post import build_pagination_keyboard, build_post_keyboard
 
-
 start_router = Router()
 
 cities_per_page = 5
 
-
-
-
-# Пас аз пахш кардани тугмаи "Мизоҷ"
+# Пас аз пахш кардани тугмаи "Мизоҷ" 😊
 @start_router.callback_query(lambda call: call.data.startswith("startclient"))
 async def welcome_client(call: types.CallbackQuery, state: FSMContext):
     user_id_data = call.data.split(":")
@@ -35,51 +31,48 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
 
         if client:
             confirmation_text = (
-                f"Аккаунти шумо:\n\n"
+                f"Аккаунти шумо: 📝\n\n"
                 f"Ном: {client.name}\n"
-                f"Рақами телефон: {client.phone_number}\n"
+                f"Рақами телефон: {client.phone_number} 📞\n"
             )
 
-            # Тугма барои тасдиқ ё ивази маълумотҳо
+            # Тугма барои тасдиқ ё ивази маълумотҳо 🔄
             markup = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")],
-                [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")]
+                [InlineKeyboardButton(text="Ивази аккаунт 🔄", callback_data="edit_client_account")],
+                [InlineKeyboardButton(text="Фармоиши такси 🚕", callback_data="inline_order_taxi")]
             ])
             await call.message.answer(confirmation_text, reply_markup=markup)
         else:
             client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="регистратсия", callback_data="client_registration")],
+                [InlineKeyboardButton(text="Регистратсия 📝", callback_data="client_registration")],
             ])
             await call.message.answer(
-                "Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед",
+                "Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\nЛутфан регистратсия кунед 📝",
                 reply_markup=client_registration_keyboard
             )
     else:
-        await call.answer("Маълумоти ID нодуруст аст.", show_alert=True)
-    
-        
-    
-    
-# Хандлер барои интихоби шаҳри оғоз
+        await call.answer("Маълумоти ID нодуруст аст ❌.", show_alert=True)
+
+# Хандлер барои интихоби шаҳри оғоз 🏙️
 @start_router.callback_query(lambda call: call.data.startswith("client_from_city"))
 async def process_from_city_callback(call: types.CallbackQuery, state: FSMContext):
     data = call.data.split("_")
-    
+
     if "page" in data:
         page = int(data[-1])
         keyboard = generate_pagination_keyboard(page, callback_prefix="client_from_city")
-        await call.message.edit_text("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+        await call.message.edit_text("Аз кадом шаҳр сафарро оғоз мекунед? 🏙️", reply_markup=keyboard)
     else:
         city = data[-1]
         await state.update_data(waiting_for_client_from_city=city)
-        await call.message.edit_text(f"Шумо аз шаҳри {city} сафарро оғоз мекунед:")
-        
+        await call.message.edit_text(f"Шумо аз шаҳри {city} сафарро оғоз мекунед 🚗:")
+
         keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_to_city")
-        await call.message.answer("Ба кадом шаҳр сафар мекунед?", reply_markup=keyboard)
+        await call.message.answer("Ба кадом шаҳр сафар мекунед? 🛣️", reply_markup=keyboard)
         await state.set_state(ClientPostFSM.waiting_for_to_city)
         
         
-# Хандлер барои интихоби шаҳри сафар
+# Хандлер барои интихоби шаҳри сафар 🏙️
 @start_router.callback_query(lambda call: call.data.startswith("client_to_city"))
 async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext):
     session = AsyncSessionLocal()
@@ -88,14 +81,14 @@ async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext)
     if "page" in data:
         page = int(data[-1])
         keyboard = generate_pagination_keyboard(page, callback_prefix="client_to_city")
-        await call.message.edit_text("Ба кадом шаҳр сафар мекунед?", reply_markup=keyboard)
+        await call.message.edit_text("Ба кадом шаҳр сафар мекунед? 🗺️", reply_markup=keyboard)
     else:
         city = data[-1]
         await state.update_data(waiting_for_client_to_city=city)
-        await call.message.edit_text(f"Шумо ба шаҳри {city} сафар мекунед.")
+        await call.message.edit_text(f"Шумо ба шаҳри {city} сафар мекунед. 🚗")
         
     
-        # Гирифтани маълумотҳои ҷамъшуда
+        # Гирифтани маълумотҳои ҷамъшуда 📋
         user_data = await state.get_data()
         
         from_city = user_data['waiting_for_client_from_city']
@@ -114,10 +107,10 @@ async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext)
         
         
         if not posts:
-            await call.message.answer("Постҳои онлайн ёфт нашуданд.")
+            await call.message.answer("Постҳои онлайн ёфт нашуданд. ❌")
             return
         
-        # Намоиши постҳо
+        # Намоиши постҳо 📢
         for post in posts:
             driver_result = await session.execute(select(Driver).where(Driver.id == post.driver_id))
             driver = driver_result.scalars().first()
@@ -125,13 +118,13 @@ async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext)
             post_information = (
                 f"Аз: {post.from_city}\n"
                 f"Ба: {post.to_city}\n\n" 
-                f"Нарх: {post.price}\n\n" 
-                f"Шумораи клиенти кабулкардашуда: {post.current_clients}\n\n" 
-                f"Шумораи клиенти лозима: {post.max_clients}\n\n" 
-                f"Номи ронанда: {driver.name}\n\n" 
-                f"Телефони ронанда: {driver.phone_number}\n\n"
-                f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n\n"
-                f"Комментария:\n {post.comment if post.comment else 'ронанда коментария нагузоштааст'}\n\n"
+                f"Нарх: {post.price} 💰\n\n" 
+                f"Шумораи клиенти кабулкардашуда: {post.current_clients} 👥\n\n" 
+                f"Шумораи клиенти лозима: {post.max_clients} 👤\n\n" 
+                f"Номи ронанда: {driver.name} 🚙\n\n" 
+                f"Телефони ронанда: {driver.phone_number} 📞\n\n"
+                f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating} ⭐\n\n"
+                f"Комментария:\n {post.comment if post.comment else 'ронанда коментария нагузоштааст'} 💬\n\n"
                 )
 
             car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
@@ -150,9 +143,9 @@ async def process_to_city_callback(call: types.CallbackQuery, state: FSMContext)
                 text=post_information,
                 reply_markup=build_post_keyboard(post.id)
             )
-        # Илова кардани тугмаҳои навигатсия
+        # Илова кардани тугмаҳои навигатсия ⬅️➡️
         markup = build_pagination_keyboard(from_city, to_city, page, total_posts)
-        await call.message.answer("Интихоби сахифа", reply_markup=markup)
+        await call.message.answer("Интихоби сахифа 📄", reply_markup=markup)
 
         await state.set_state(ClientPostFSM.waiting_for_selected_post_id)
 
@@ -174,21 +167,22 @@ async def prev_page(call: types.CallbackQuery, state: FSMContext):
     posts_result = await session.execute(select(DriverPost).where(DriverPost.from_city == from_city, DriverPost.to_city == to_city, DriverPost.is_online == True).order_by(DriverPost.current_clients.desc()).offset((page - 1) * per_page).limit(per_page))
     posts = posts_result.scalars().all()
     await session.close()
-    # Намоиши постҳо
+    
+    # Намоиши постҳо 📄
     for post in posts:
         driver_result = await session.execute(select(Driver).where(Driver.id == post.driver_id))
         driver = driver_result.scalars().first()
         await session.close()
         post_information = (
-            f"Аз: {post.from_city}\n"
-            f"Ба: {post.to_city}\n\n" 
-            f"Нарх: {post.price}\n\n" 
-            f"Шумораи клиенти кабулкардашуда: {post.current_clients}\n\n" 
-            f"Шумораи клиенти лозима: {post.max_clients}\n\n" 
-            f"Номи ронанда: {driver.name}\n\n" 
-            f"Телефони ронанда: {driver.phone_number}\n\n"
-            f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n\n"
-            f"Комментария:\n {post.comment if post.comment else 'ронанда коментария нагузоштааст'}\n\n"
+            f"Аз: {post.from_city} 🏙️\n"
+            f"Ба: {post.to_city} 🚗\n\n" 
+            f"Нарх: {post.price} 💵\n\n" 
+            f"Шумораи клиенти кабулкардашуда: {post.current_clients} 👤\n\n" 
+            f"Шумораи клиенти лозима: {post.max_clients} 👥\n\n" 
+            f"Номи ронанда: {driver.name} 👨‍✈️\n\n" 
+            f"Телефони ронанда: {driver.phone_number} 📞\n\n"
+            f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating} ⭐\n\n"
+            f"Комментария:\n {post.comment if post.comment else 'ронанда коментария нагузоштааст'} 💬\n\n"
             )
 
         car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
@@ -209,7 +203,7 @@ async def prev_page(call: types.CallbackQuery, state: FSMContext):
 
     
     markup = build_pagination_keyboard(from_city, to_city, page, total_posts)
-    await call.message.answer(f"Саҳифаи {page}", reply_markup=markup)
+    await call.message.answer(f"Саҳифаи {page} 📃", reply_markup=markup)
     await state.set_state(ClientPostFSM.waiting_for_selected_post_id)
 
 @start_router.callback_query(lambda call: call.data.startswith("driver_next"))
@@ -230,21 +224,21 @@ async def next_page(call: types.CallbackQuery, state: FSMContext):
     await session.close()
     
     
-    # Намоиши постҳо
+    # Намоиши постҳо 📄
     for post in posts:
         driver_result = await session.execute(select(Driver).where(Driver.id == post.driver_id))
         driver = driver_result.scalars().first()
         await session.close()
         post_information = (
-            f"Аз: {post.from_city}\n"
-            f"Ба: {post.to_city}\n\n" 
-            f"Нарх: {post.price}\n\n" 
-            f"Шумораи клиенти кабулкардашуда: {post.current_clients}\n\n" 
-            f"Шумораи клиенти лозима: {post.max_clients}\n\n" 
-            f"Номи ронанда: {driver.name}\n\n" 
-            f"Телефони ронанда: {driver.phone_number}\n\n"
-            f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n"
-            f"Комментария:\n {post.comment if post.comment else 'ронанда коментария нагузоштааст'}\n\n"
+            f"Аз: {post.from_city} 🏙️\n"
+            f"Ба: {post.to_city} 🚗\n\n" 
+            f"Нарх: {post.price} 💵\n\n" 
+            f"Шумораи клиенти кабулкардашуда: {post.current_clients} 👤\n\n" 
+            f"Шумораи клиенти лозима: {post.max_clients} 👥\n\n" 
+            f"Номи ронанда: {driver.name} 👨‍✈️\n\n" 
+            f"Телефони ронанда: {driver.phone_number} 📞\n\n"
+            f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating} ⭐\n\n"
+            f"Комментария:\n {post.comment if post.comment else 'ронанда коментария нагузоштааст'} 💬\n\n"
             )
 
         car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
@@ -265,28 +259,28 @@ async def next_page(call: types.CallbackQuery, state: FSMContext):
 
     
     markup = build_pagination_keyboard(from_city, to_city, page, total_posts)
-    await call.message.answer(f"Саҳифаи {page}", reply_markup=markup)
+    await call.message.answer(f"Саҳифаи {page} 📃", reply_markup=markup)
     await state.set_state(ClientPostFSM.waiting_for_selected_post_id)
 
 
 
 
-# Ҳодисаи пахши тугмаи "Интихоб"
+# Ҳодисаи пахши тугмаи "Интихоб" 🚗
 @start_router.callback_query(lambda call: call.data.startswith("choose"))
 async def handle_choose_post(call: CallbackQuery, state: FSMContext):
 
-    # ID постро мегирем аз callback data
+    # ID постро мегирем аз callback data 🆔
     post_id = int(call.data.split(":")[1])
     await state.update_data(waiting_for_selected_post_id=post_id)
 
-    await call.message.answer("Шумо чанд нафаред?:")
+    await call.message.answer("Шумо чанд нафаред? 👥")
     await state.set_state(ClientPostFSM.waiting_for_num_clients)
 
-# Қабули шумораи мизоҷон ва сабти мизоҷ дар пойгоҳи додаҳо
+# Қабули шумораи мизоҷон ва сабти мизоҷ дар пойгоҳи додаҳо 📊
 @start_router.message(ClientPostFSM.waiting_for_num_clients)
 async def process_num_clients(message: types.Message, state: FSMContext):
     if not message.text.isdigit():
-        await message.answer("Лутфан рақами тулуфонро дуруст нависед")
+        await message.answer("Лутфан рақами тулуфонро дуруст нависед 📱")
     await state.update_data(waiting_for_num_clients=message.text)
     bot = message.bot
     session = AsyncSessionLocal()
@@ -294,8 +288,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
     post_id = user_data["waiting_for_selected_post_id"]
     num_clients = user_data['waiting_for_num_clients']
 
-            
-    # Маълумоти мизоҷро ёфтан
+    # Маълумоти мизоҷро ёфтан 👤
     user_id = message.from_user.id
 
     client_result = await session.execute(select(Client).where(Client.user_id == user_id))
@@ -307,14 +300,14 @@ async def process_num_clients(message: types.Message, state: FSMContext):
     post_max_clients = post.max_clients
     if num_clients.isdigit() and int(post_current_clients) + int(num_clients) <= int(post_max_clients):
         if client:
-            # Гирифтани маълумотҳои ҷамъшуда
+            # Гирифтани маълумотҳои ҷамъшуда 📝
             user_data = await state.get_data()
             num_clients = user_data['waiting_for_num_clients']
             from_city = user_data['waiting_for_client_from_city']
             to_city = user_data['waiting_for_client_to_city']
             post_id = user_data["waiting_for_selected_post_id"]
             await state.clear()        
-            # Сабти мизоҷ ба пойгоҳи додаҳо
+            # Сабти мизоҷ ба пойгоҳи додаҳо 💾
             new_client = ClientPost(
                 num_clients=num_clients,
                 from_city=from_city,
@@ -328,14 +321,11 @@ async def process_num_clients(message: types.Message, state: FSMContext):
                 await session.close()
             async with session.begin():
                 new_current_clients = int(post_current_clients) + int(num_clients)
-                await session.execute(update(DriverPost).where(DriverPost.id == post.id).values(current_clients = new_current_clients))
+                await session.execute(update(DriverPost).where(DriverPost.id == post.id).values(current_clients=new_current_clients))
                 await session.commit()
                 await session.close()
             
-    
-
-            
-            # Пост ва ронандаро аз базаи маълумот ёфтан
+            # Пост ва ронандаро аз базаи маълумот ёфтан 🚕
             post_result = await session.execute(select(DriverPost).where(DriverPost.id == post_id))
             post = post_result.scalars().first()
             driver_result = await session.execute(select(Driver).where(Driver.id == post.driver_id))
@@ -343,26 +333,23 @@ async def process_num_clients(message: types.Message, state: FSMContext):
             clientpost_result = await session.execute(select(ClientPost).where(ClientPost.client_user_id == user_id).order_by(desc(ClientPost.id)))
             clientpost = clientpost_result.scalars().first()
             await session.close()
-            # Паёми тасдиқ ба мизоҷ
-            await message.answer(text=f"Шумо постро интихоб кардед: {post.from_city} -> {post.to_city}\n Нарх: {post.price} сомонӣ.\n Ронанда: {driver.name}.\n Телефони ронанда: {driver.phone_number} ")
+            # Паёми тасдиқ ба мизоҷ ✅
+            await message.answer(text=f"Шумо постро интихоб кардед: {post.from_city} -> {post.to_city}\n Нарх: {post.price} сомонӣ.\n Ронанда: {driver.name}.\n Телефони ронанда: {driver.phone_number} 📞")
             
-    
-        
-    
             driver_message = (
                 f"Клиент сафарро интихоб кард:\n"
                 f"Шаҳр аз: {post.from_city} Ба: {post.to_city}\n\n"
                 f"Нарх: {post.price} сомонӣ\n\n"
                 f"Клиент: {client.name}\n\n"
-                f"Телефон: {client.phone_number}\n\n"
-                f"Шумораи клиент: {clientpost.num_clients}\n\n"
+                f"Телефон: {client.phone_number} 📞\n\n"
+                f"Шумораи клиент: {clientpost.num_clients} 👥\n\n"
                 "Клиент занги шуморо интизор аст. Бо клиент сӯҳбат кунед ва ӯро қабул кунед."
             )
         
-            # Эҷоди тугмаҳои қабул ва рад
+            # Эҷоди тугмаҳои қабул ва рад 🔄
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Қабул кардан", callback_data=f"accept_{client.id}_{post.id}")],
-                [InlineKeyboardButton(text="Рад кардан", callback_data=f"decline_{client.id}_{post.id}")]
+                [InlineKeyboardButton(text="Қабул кардан ✅", callback_data=f"accept_{client.id}_{post.id}")],
+                [InlineKeyboardButton(text="Рад кардан ❌", callback_data=f"decline_{client.id}_{post.id}")]
             ])
 
             try:
@@ -372,16 +359,12 @@ async def process_num_clients(message: types.Message, state: FSMContext):
                     reply_markup=keyboard
                 )
             except Exception as e:
-                print(f"Хатогӣ ҳангоми фиристодани паём ба ронанда: {e}")
-
-
+                print(f"Хатогӣ ҳангоми фиристодани паём ба ронанда: {e} ❗")
 
         else:
-            
             client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="регистратсия", callback_data="client_registration")],
-                ])
-
+                [InlineKeyboardButton(text="Регистратсия 📝", callback_data="client_registration")],
+            ])
             await message.answer("Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
 
     else:
@@ -395,7 +378,7 @@ async def process_num_clients(message: types.Message, state: FSMContext):
 @start_router.callback_query(lambda call: call.data=="client_registration")
 async def client_registration(call: CallbackQuery, state: FSMContext):
     
-    await call.message.answer("Лутфан номатонро нависед:")
+    await call.message.answer("Лутфан номатонро нависед: ✏️")
     await state.set_state(ClientRegistrationFSM.waiting_for_name)
 
 
@@ -405,7 +388,7 @@ async def client_registration(call: CallbackQuery, state: FSMContext):
 @start_router.message(ClientRegistrationFSM.waiting_for_name)
 async def process_name(message: types.Message, state: FSMContext):
     await state.update_data(waiting_for_name=message.text)
-    await message.answer("Лутфан рақами телефони худро нависед:")
+    await message.answer("Лутфан рақами телефони худро нависед: 📞")
     await state.set_state(ClientRegistrationFSM.waiting_for_phone_number)
 
 # Қабули рақами телефон ва талаб кардани шумораи мизоҷон
@@ -453,25 +436,25 @@ async def process_phone_number(message: types.Message, state: FSMContext):
             driver = driver_result.scalars().first()
      
             # Паёми тасдиқ ба мизоҷ
-            await message.answer(text=f"Шумо постро интихоб кардед: {post.from_city} -> {post.to_city}\n Нарх: {post.price} сомонӣ.\n Ронанда: {driver.name}.\n Телефони ронанда: {driver.phone_number} ")
+            await message.answer(text=f"✅ Шумо постро интихоб кардед: {post.from_city} -> {post.to_city}\n💰 Нарх: {post.price} сомонӣ.\n👨‍✈️ Ронанда: {driver.name}.\n📱 Телефони ронанда: {driver.phone_number} ")
             
     
         
     
             driver_message = (
-                f"Клиент сафарро интихоб кард:\n"
+                f"Клиент сафарро интихоб кард: 🚗\n"
                 f"Шаҳр аз: {post.from_city} Ба: {post.to_city}\n\n"
-                f"Нарх: {post.price} сомонӣ\n\n"
-                f"Клиент: {client.name}\n\n"
-                f"Телефон: {client.phone_number}\n\n"
-                f"Шумораи клиент: {clientpost.num_clients}\n\n"
-                "Клиент занги шуморо интизор аст. Бо клиент сӯҳбат кунед ва ӯро қабул кунед."
+                f"💰 Нарх: {post.price} сомонӣ\n\n"
+                f"👤 Клиент: {client.name}\n\n"
+                f"📱 Телефон: {client.phone_number}\n\n"
+                f"👥 Шумораи клиент: {clientpost.num_clients}\n\n"
+                "Клиент занги шуморо интизор аст. Бо клиент сӯҳбат кунед ва ӯро қабул кунед. ✅"
             )
             
             # Эҷоди тугмаҳои қабул ва рад
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Қабул кардан", callback_data=f"accept_{client.id}_{post.id}")],
-                [InlineKeyboardButton(text="Рад кардан", callback_data=f"decline_{client.id}_{post.id}")]
+                [InlineKeyboardButton(text="✅ Қабул кардан", callback_data=f"accept_{client.id}_{post.id}")],
+                [InlineKeyboardButton(text="❌ Рад кардан", callback_data=f"decline_{client.id}_{post.id}")]
             ])
 
             try:
@@ -484,7 +467,7 @@ async def process_phone_number(message: types.Message, state: FSMContext):
                 print(f"Хатогӣ ҳангоми фиристодани паём ба ронанда: {e}")
         else:
             keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-            await message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+            await message.answer("🗺 Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
             await state.set_state(ClientPostFSM.waiting_for_from_city)
 
         
@@ -505,21 +488,19 @@ async def choose_another_taxi(call: types.CallbackQuery, state: FSMContext):
             await session.commit()
             await session.close()
     keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-    await call.message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+    await call.message.answer("🚕 Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
     await state.set_state(ClientPostFSM.waiting_for_from_city)
-
-
 
 
 # Функсия барои қабул кардани баҳо аз тугмаҳо
 @start_router.callback_query(lambda call: call.data.startswith("rate"))
 async def process_rating(call: CallbackQuery):
     bot = call.bot
-    client_user_id=call.from_user.id
+    client_user_id = call.from_user.id
     # Парс кардани callback_data
-    data=call.data.split(":")
-    driver_id=data[1] 
-    rating_value=data[2] 
+    data = call.data.split(":")
+    driver_id = data[1] 
+    rating_value = data[2] 
     trip_id = data[3]
     driver_id = int(driver_id)
     rating_value = int(rating_value)
@@ -543,10 +524,10 @@ async def process_rating(call: CallbackQuery):
         await session.commit()
         await session.close()
     # Паёми тасдиқ барои клиент
-    await call.message.answer(f"Шумо ба ронандаи {driver.name} баҳои {rating_value} гузоштед.\n ")
+    await call.message.answer(f"✅ Шумо ба ронандаи {driver.name} баҳои {rating_value} гузоштед.\n")
 
     # Фиристодани паёми тасдиқ барои ронанда
-    await bot.send_message(driver.user_id, f"Баҳои нав аз сафар: {rating_value}.")
+    await bot.send_message(driver.user_id, f"⭐ Баҳои нав аз сафар: {rating_value}.")
 
 @start_router.message(Command("my_drivers"))
 async def my_posts(message: types.Message, state: FSMContext):
@@ -564,43 +545,39 @@ async def my_posts(message: types.Message, state: FSMContext):
             driver = driver_result.scalars().first()
             await session.close()
             driver_info = (
-                    f"Маълумот дар бораи сафар:\n\n"
-                f"Аз шаҳри: {driverpost.from_city}\n\n"
-                f"Ба шаҳри: {driverpost.to_city}\n\n"
-                f"Нарх: {driverpost.price}\n\n"
-                f"Шумораи клиенти кабулкардашуда: {driverpost.current_clients}\n\n"
-                f"Шумораи клиенти лозима: {driverpost.max_clients}\n\n"
-                f"Номи ронанда: {driver.name}\n\n" 
-                f"Телефони ронанда: {driver.phone_number}\n\n"
-                f"Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n\n"
-                f"Комментария:\n {driverpost.comment if driverpost.comment else 'ронанда коментария нагузоштааст'}\n\n"
-                )
-
+                f"📝 Маълумот дар бораи сафар:\n\n"
+                f"🚩 Аз шаҳри: {driverpost.from_city}\n"
+                f"🏁 Ба шаҳри: {driverpost.to_city}\n"
+                f"💵 Нарх: {driverpost.price}\n"
+                f"👥 Шумораи клиенти кабулкардашуда: {driverpost.current_clients}\n"
+                f"👤 Шумораи клиенти лозима: {driverpost.max_clients}\n"
+                f"👨‍✈️ Номи ронанда: {driver.name}\n"
+                f"📞 Телефони ронанда: {driver.phone_number}\n"
+                f"⭐ Баҳои Ронанда аз 1 то 5: {driver.avr_rating}\n"
+                f"💬 Комментария:\n {driverpost.comment if driverpost.comment else 'ронанда коментария нагузоштааст'}\n\n"
+            )
 
             # Эҷоди тугмаҳои қабул ва рад
             keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Рад кардан", callback_data=f"declinedriver_{driver.id}_{driverpost.id}")]
+                [InlineKeyboardButton(text="❌ Рад кардан", callback_data=f"declinedriver_{driver.id}_{driverpost.id}")]
             ])
             
-            car_images_from_db_result = await  session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
+            car_images_from_db_result = await session.execute(select(CarImage).where(CarImage.driver_user_id == driver.user_id))
             car_images_from_db = car_images_from_db_result.scalars().all()
             await session.close()
-            media=[]    
+            media = []    
             for car_image in car_images_from_db:
-                car_img=car_image.file_id
+                car_img = car_image.file_id
                 media.append(InputMediaPhoto(media=car_img))
             await message.answer_media_group(media)
             media.clear()
-               
-
-
 
             await message.answer(text=driver_info, reply_markup=keyboard)
                 
     else:
-        await message.answer("Шумо ҳанӯз такси заказ накардаед.")
+        await message.answer("ℹ️ Шумо ҳанӯз такси заказ накардаед.")
         keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-        await message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+        await message.answer("🚕 Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
         await state.set_state(ClientPostFSM.waiting_for_from_city)
 
 
@@ -614,29 +591,28 @@ async def account_info(message: types.Message, state: FSMContext):
     if client:
         confirmation_text = (
             f"Аккаунти шумо:\n\n"
-            f"Ном: {client.name}\n"
-            f"Рақами телефон: {client.phone_number}\n"
+            f"Ном: {client.name} 😊\n"
+            f"Рақами телефон: {client.phone_number} 📞\n"
             )
-
 
         # Тугма барои тасдиқ ё ивази маълумотҳо
         markup = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Ивази аккаунт", callback_data="edit_client_account")],
-            [InlineKeyboardButton(text="Фармоиши такси", callback_data="inline_order_taxi")]
+            [InlineKeyboardButton(text="Ивази аккаунт 🔄", callback_data="edit_client_account")],
+            [InlineKeyboardButton(text="Фармоиши такси 🚖", callback_data="inline_order_taxi")]
         ])
         await message.answer(confirmation_text, reply_markup=markup)
     else:
         client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="регистратсия", callback_data="client_registration")],
+                [InlineKeyboardButton(text="Регистратсия ✍️", callback_data="client_registration")],
                 ])
 
-        await message.answer("Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед", reply_markup=client_registration_keyboard)
+        await message.answer("Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\n Лутфан регистратсия кунед 📲", reply_markup=client_registration_keyboard)
 
 
 @start_router.message(Command("order_a_taxi"))
 async def order_a_taxi(message: types.Message, state: FSMContext):
     keyboard = generate_pagination_keyboard(page=0, callback_prefix="client_from_city")
-    await message.answer("Аз кадом шаҳр сафарро оғоз мекунед?", reply_markup=keyboard)
+    await message.answer("Аз кадом шаҳр сафарро оғоз мекунед? 🌆", reply_markup=keyboard)
     await state.set_state(ClientPostFSM.waiting_for_from_city)
 
 
@@ -645,14 +621,13 @@ async def order_a_taxi(message: types.Message, state: FSMContext):
 @start_router.callback_query(lambda call: call.data == "edit_client_account")
 async def edit_client_info(call: types.CallbackQuery):
 
-
     # Сохтани инлайн-клавиатура барои интихоб кардани майдон
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Ном", callback_data="clientedit_name")],
-        [InlineKeyboardButton(text="Рақами телефон", callback_data="clientedit_phone")],
+        [InlineKeyboardButton(text="Ном ✏️", callback_data="clientedit_name")],
+        [InlineKeyboardButton(text="Рақами телефон 📱", callback_data="clientedit_phone")],
         ])
 
-    await call.message.answer("Чиро тағйир додан мехоҳед?", reply_markup=keyboard)
+    await call.message.answer("Чиро тағйир додан мехоҳед? 🔄", reply_markup=keyboard)
 
 # Қабули callback-и инлайн-клавиатура ва сабти он
 @start_router.callback_query(lambda call: call.data.startswith("clientedit_"))
@@ -662,11 +637,11 @@ async def choose_client_field(call: types.CallbackQuery, state: FSMContext):
     await state.update_data(field=field)
 
     if field == "name":
-        await call.message.answer("Номи навро ворид кунед:")
+        await call.message.answer("Номи навро ворид кунед: 📝")
         await state.set_state(EditClientInfo.waiting_for_new_value)
     
     elif field == "phone":
-        await call.message.answer("Рақами телефони навро ворид кунед:")
+        await call.message.answer("Рақами телефони навро ворид кунед: 📞")
         await state.set_state(EditClientInfo.waiting_for_new_value)
     
     await call.answer()  # Ҷавоб ба callback барои пешгирӣ кардани пайғомҳои 'callback query answer timeout'
@@ -694,8 +669,7 @@ async def update_info(message: types.Message, state: FSMContext):
             await session.commit()
             await session.close()    
             await state.clear()    
-    await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд.")
-    
+    await message.answer("Маълумотҳоятон бомуваффақият тағйир дода шуданд. 🎉")
 
 @start_router.callback_query(lambda call: call.data.startswith("declinedriver"))
 async def decline_driver(call: types.CallbackQuery):
@@ -729,15 +703,14 @@ async def decline_driver(call: types.CallbackQuery):
         # Фиристодани паём ба ронанда
         await bot.send_message(
             chat_id=client.user_id,
-            text=f"Шумо {driver.name}-ро рад кардед."
+            text=f"Шумо {driver.name}-ро рад кардед. ❌"
         )
-
 
         
         # Фиристодани паём ба мизоҷ
         await bot.send_message(
             chat_id=driver.user_id,
-            text=f"Клиент: {client.name}\n\n Аз {post.from_city}\n ба {post.to_city}\n шуморо радъ накард.\n\n",
+            text=f"Клиент: {client.name} 🚶\n\n Аз {post.from_city} 🌆\n ба {post.to_city} 🏙️\n шуморо радъ накард.\n\n",
         )
 
         # Ҷавоби callback_query-ро медиҳем
