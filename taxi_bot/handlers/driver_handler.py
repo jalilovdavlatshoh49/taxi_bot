@@ -1049,7 +1049,7 @@ async def my_posts(message: types.Message):
 
 
 # Callback барои маълумот дар бораи тугма
-@start_router.callback_query_handler(lambda c: c.data == 'post_info')
+@start_router.callback_query(lambda c: c.data == 'post_info')
 async def process_post_info(call: types.CallbackQuery):
     post_keys_info = (
         "Ҳар як пост дорои тугмаҳои зерин мебошад:\n\n"
