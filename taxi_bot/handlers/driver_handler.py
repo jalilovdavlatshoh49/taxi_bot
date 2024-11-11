@@ -408,7 +408,9 @@ async def process_comment(message: Message, state: FSMContext):
                 [InlineKeyboardButton(text="Онлайн", callback_data=f"set_online:{driver_trip.id}")],
                 [InlineKeyboardButton(text="Офлайн", callback_data=f"set_offline:{driver_trip.id}")],
                 [InlineKeyboardButton(text="Удалить кардан", callback_data=f"delete_trip:{driver_trip.id}")],
-                [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")]
+                [InlineKeyboardButton(text="Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")],
+
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
             ])
 
 
@@ -469,7 +471,9 @@ async def set_trip_online(call: CallbackQuery):
     [InlineKeyboardButton(text="Онлайн 🌐", callback_data=f"set_online:{trip.id}")],
     [InlineKeyboardButton(text="Офлайн 🚫", callback_data=f"set_offline:{trip.id}")],
     [InlineKeyboardButton(text="Удалить кардан ❌", callback_data=f"delete_trip:{trip.id}")],
-    [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")]
+    [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")],
+
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
     ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)
@@ -509,7 +513,9 @@ async def no_set_offline(call: CallbackQuery):
         [InlineKeyboardButton(text="Онлайн 🌐", callback_data=f"set_online:{trip.id}")],
         [InlineKeyboardButton(text="Офлайн 🚫", callback_data=f"set_offline:{trip.id}")],
         [InlineKeyboardButton(text="Удалить кардан ❌", callback_data=f"delete_trip:{trip.id}")],
-        [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")]
+        [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")],
+
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
         ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)    
@@ -576,7 +582,9 @@ async def yes_set_offline(call: CallbackQuery):
         [InlineKeyboardButton(text="Онлайн 🌐", callback_data=f"set_online:{trip.id}")],
         [InlineKeyboardButton(text="Офлайн 🚫", callback_data=f"set_offline:{trip.id}")],
         [InlineKeyboardButton(text="Удалить кардан ❌", callback_data=f"delete_trip:{trip.id}")],
-        [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")]
+        [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{trip.id}")],
+
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
         ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)    
@@ -655,7 +663,8 @@ async def delete_trip(call: CallbackQuery,):
                 [InlineKeyboardButton(text="Онлайн 🌐", callback_data=f"set_online:{driver_trip.id}")],
                 [InlineKeyboardButton(text="Офлайн 🚫", callback_data=f"set_offline:{driver_trip.id}")],
                 [InlineKeyboardButton(text="Удалить кардан ❌", callback_data=f"delete_trip:{driver_trip.id}")],
-                [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{driver_trip.id}")]
+                [InlineKeyboardButton(text="Ба роҳ баромадан 🚗", callback_data=f"start_trip:{driver_trip.id}")],
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
             ])
 
 
@@ -763,7 +772,8 @@ async def my_posts(message: types.Message, state: FSMContext):
                     [InlineKeyboardButton(text="📲 Онлайн", callback_data=f"set_online:{driver_trip.id}")],
                     [InlineKeyboardButton(text="📴 Офлайн", callback_data=f"set_offline:{driver_trip.id}")],
                     [InlineKeyboardButton(text="❌ Удалить кардан", callback_data=f"delete_trip:{driver_trip.id}")],
-                    [InlineKeyboardButton(text="🚗 Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")]
+                    [InlineKeyboardButton(text="🚗 Ба роҳ баромадан", callback_data=f"start_trip:{driver_trip.id}")],
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
                 ])
 
                 await message.answer(driver_info, reply_markup=keyboard)
@@ -870,7 +880,8 @@ async def handle_accept_callback(call: types.CallbackQuery, state: FSMContext):
         [InlineKeyboardButton(text="Онлайн 🟢", callback_data=f"set_online:{edited_post.id}")],
         [InlineKeyboardButton(text="Офлайн 🔴", callback_data=f"set_offline:{edited_post.id}")],
         [InlineKeyboardButton(text="Удалить кардан 🗑️", callback_data=f"delete_trip:{edited_post.id}")],
-        [InlineKeyboardButton(text="Ба роҳ баромадан 🏁", callback_data=f"start_trip:{edited_post.id}")]
+        [InlineKeyboardButton(text="Ба роҳ баромадан 🏁", callback_data=f"start_trip:{edited_post.id}")],
+[InlineKeyboardButton(text="Маълумот дар бораи тугмаҳои пост", callback_data="post_info")]
     ])
 
     await call.message.answer(driver_info, reply_markup=keyboard)
@@ -1035,4 +1046,19 @@ async def my_posts(message: types.Message):
                 await session.close()            
         else:
             await message.answer(f"Шумо ҳанӯз барои\n\n Пост бо id: {driverpost.id}\n\n Аз {driverpost.from_city} ➡️ Ба {driverpost.to_city} ❌\n\n клиент надоред.")
+
+
+# Callback барои маълумот дар бораи тугма
+@start_router.callback_query_handler(lambda c: c.data == 'post_info')
+async def process_post_info(call: types.CallbackQuery):
+    post_keys_info = (
+        "Ҳар як пост дорои тугмаҳои зерин мебошад:\n\n"
+        "• 🌐 Онлайн — Ин ҳолатро интихоб кунед, то ки муштариён постро дар ҷустуҷӯ бинанд ва интихоб карда тавонанд. Ҳар посте ки онлайн аст, барои муштариён дастрас аст.\n\n"
+        "• 🔒 Офлайн — Ин ҳолатро интихоб кунед, агар хоҳед, ки постро барои муштариён ноаён кунед. Постҳои офлайнро муштариён дида ва интихоб карда наметавонанд.\n\n"
+        "• 🗑 Удалить кардан — Барои нест кардани посте, ки дигар ба он эҳтиёҷ надоред.\n\n"
+        "• 🚶‍♂️ Ба роҳ баромадан — Вақте ки миқдори клиентҳои лозима ҷамъ мешавад ва шумо барои сафар тайёред, ин тугмаро пахш кунед.\n\n\n"
+        "Пас аз анҷоми сафар: Вақте ки ба шаҳр расидед, тугмаи 'Ба шаҳр расидем'-ро пахш кунед, то ки ҳамаи муштариёне ки қабул карда будед тоза шаванд ва ҳолати пости шумо ба офлайн гузарад. Ин ба он маъност, ки то онро дубора онлайн накунед, ҳеҷ кас фармоиши сафари шуморо карда наметавонад.\n\n"
+        "💡 Маслиҳат: Бо муштариён хушмуомила бошед. Муштариён пас аз анҷоми сафар метавонанд ба шумо баҳо гузоранд, ки ин ба беҳтар шудани эътибори шумо дар байни онҳо мусоидат мекунад."
+    )
+    await call.message.answer(post_keys_info)
                 
