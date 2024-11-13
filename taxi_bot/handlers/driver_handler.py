@@ -607,6 +607,9 @@ async def delete_trip(call: CallbackQuery,):
     trip = trip_result.scalars().first()
     clientposts_result = await session.execute(select(ClientPost).where(ClientPost.selected_post_id == trip.id))
     clientposts = clientposts_result.scalars().all()
+    driver_result = await session.execute(select(Driver).where(Driver.user_id == call.message.from_user.id))
+    driver = driver_result.scalars().first()
+    driver_id = driver.id
     await session.close()
     if clientposts:
         for clientpost in clientposts:
@@ -634,10 +637,6 @@ async def delete_trip(call: CallbackQuery,):
 
     await call.message.answer("Сафари шумо бомуваффақият удалит карда шуд 🗑️.")
 
-    driver_result = await session.execute(select(Driver).where(Driver.user_id == call.message.from_user.id))
-    driver = driver_result.scalars().first()
-    await session.close()
-    driver_id = driver.id
 
 
     driver_trips_result = await session.execute(select(DriverPost).where(DriverPost.driver_id == driver_id).order_by(DriverPost.is_online, DriverPost.current_clients))
