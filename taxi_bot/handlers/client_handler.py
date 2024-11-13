@@ -46,10 +46,11 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
             await call.message.answer(confirmation_text, reply_markup=markup)
         else:
             client_registration_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-                [InlineKeyboardButton(text="Регистратсия 📝", callback_data="client_registration")],
+                [InlineKeyboardButton(text="Ба қайдгирии муштарӣ 📝", callback_data="client_registration")],
             ])
             await call.message.answer(
-                "Ҳануз барои заказ кардани таксӣ аккаунт надоред.\n\nЛутфан регистратсия кунед 📝",
+                f"Ҳануз барои заказ кардани таксӣ ном ва рақами телефонатонро ба қайд нагирифтаед. ❌\n\n"
+                f"Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n Ном ва рақами телефони шумо танҳо пас аз фармоиш ба ронанда фиристода мешавад, ки барои тамос дар бораи сафар лозим аст. 📲"
                 reply_markup=client_registration_keyboard
             )
     else:
