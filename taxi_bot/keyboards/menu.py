@@ -7,16 +7,16 @@ async def set_menu_commands(bot: Bot):
     from bot_file import bot
     
     commands = [
-            BotCommand(command="how_to_use_bot", description="Истифодабарии бот"),
-            BotCommand(command="taxi_channel", description="Ба група обуна шавед"),
+            BotCommand(command="how_to_use_bot", description="Чи тавр Истифода бурдани бот"),
+            BotCommand(command="taxi_channel", description="Ба гурӯҳ обуна шавед"),
             BotCommand(command="menu", description="Меню"),
             BotCommand(command="order_a_taxi", description="Фармоиши таксӣ"),
             BotCommand(command="my_drivers", description="Ронандаи ман"),
             BotCommand(command="my_posts", description="Постҳои ман"),
             BotCommand(command="my_clients", description="Клиентҳои ман"),
             BotCommand(command="new_trip", description="Сафари нав ба қайд гирифтан"),
-            BotCommand(command="account", description="Аккаунт ҳамчун ронанда"),
-            BotCommand(command="client_account", description="Аккаунт ҳамчун клиент")
+            BotCommand(command="account", description="Маълумотҳои шахсӣ ҳамчун ронанда"),
+            BotCommand(command="client_account", description="Маълумотҳои шахсӣ ҳамчун клиент")
             
        ]
     await bot.set_my_commands(commands)
