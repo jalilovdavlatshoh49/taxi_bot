@@ -49,10 +49,10 @@ async def welcome_client(call: types.CallbackQuery, state: FSMContext):
                 [InlineKeyboardButton(text="Ба қайдгирии муштарӣ 📝", callback_data="client_registration")],
             ])
             await call.message.answer(
-                f"Ҳануз барои заказ кардани таксӣ ном ва рақами телефонатонро ба қайд нагирифтаед. ❌\n\n"
-                f"Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n Ном ва рақами телефони шумо танҳо пас аз фармоиш ба ронанда фиристода мешавад, ки барои тамос дар бораи сафар лозим аст. 📲"
-                reply_markup=client_registration_keyboard
-            )
+    f"Ҳануз барои заказ кардани таксӣ ном ва рақами телефонатонро ба қайд нагирифтаед. ❌\n\n"
+    f"Ном ва рақами телефони шуморо ҳеҷ кас намебинад. 🔒\n Ном ва рақами телефони шумо танҳо пас аз фармоиш ба ронанда фиристода мешавад, ки барои тамос дар бораи сафар лозим аст. 📲",
+    reply_markup=client_registration_keyboard
+)
     else:
         await call.answer("Маълумоти ID нодуруст аст ❌.", show_alert=True)
 
