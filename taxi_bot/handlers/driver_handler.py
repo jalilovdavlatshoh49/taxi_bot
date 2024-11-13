@@ -607,7 +607,7 @@ async def delete_trip(call: CallbackQuery,):
     trip = trip_result.scalars().first()
     clientposts_result = await session.execute(select(ClientPost).where(ClientPost.selected_post_id == trip.id))
     clientposts = clientposts_result.scalars().all()
-    driver_result = await session.execute(select(Driver).where(Driver.user_id == call.message.from_user.id))
+    driver_result = await session.execute(select(Driver).where(Driver.user_id == call.from_user.id))
     driver = driver_result.scalars().first()
     driver_id = driver.id
     await session.close()
